@@ -1,0 +1,1250 @@
+<!--@if($layout == "shop" && ($act == "dispBoardWrite" || $act == "dispBoardDelete" || $act == "dispDocumentAdminSocialView"))-->
+<!--#include("layouts/yamnyam_shop_layout/layout.html")-->
+<!--@else-->
+
+<script src="./js/jquery.min.js"></script>
+<script src="./js/jquery-ui.min.js"></script>
+<script src="./js/jquery.hotkeys.js"></script>
+<script src="./js/interface.js" type="text/javascript"></script>
+
+<!--%import("js/layout.js")-->
+<!--%import("css/layout.css")-->
+<script type="text/javascript">
+// <![CDATA[
+	var flag = 0;
+	
+	//토글 스위치 변수
+	var toggleCalory = false;
+	var togglePrice = true;
+	
+	var data = new Array();
+	var sumPrice = new Object();
+	var minimumPrice = new Object();
+	// 3.27일 다른부분에서 드래그 안되도록 수정 -진국
+	var omitformtags=["input", "textarea", "select"]
+
+	omitformtags=omitformtags.join("|")
+
+	var payment= new Array;
+
+	var id;
+	var price;
+	var calorie;
+	var name;
+	var phone;
+	var nickname;
+	
+	function displayMessage(message) {				
+		var winH = $(window).height();
+		var winW = $(window).width();
+		
+		$(".toastMessages").css('top',  $(window).scrollTop()+winH/2-$(".toastMessages").height()/2);
+		$(".toastMessages").css('left', winW/2-$(".toastMessages").width()/2);
+		
+		if(message==0) {
+			$("#toastMessage_0").fadeIn(400);
+			$("#toastMessage_0").fadeOut(400);
+		}
+		else if(message==1){
+			$("#toastMessage_1").fadeIn(400);
+			$("#toastMessage_1").fadeOut(400);
+		}
+		else if(message==2){
+			$("#toastMessage_2").fadeIn(400);
+			$("#toastMessage_2").fadeOut(400);
+		}
+		else if(message==3){
+			$("#toastMessage_3").fadeIn(400);
+			$("#toastMessage_3").fadeOut(400);
+		}			
+	}
+
+	function copyVar(id2, price2, calorie2, name2, phone2, nickname2) {
+		id=id2;
+		price=price2;
+		calorie=calorie2;
+		name=name2;
+		phone=phone2;
+		nickname=nickname2;
+	}
+
+	function disableselect(e){
+		if (omitformtags.indexOf(e.target.tagName.toLowerCase())==-1)
+		return false
+	}
+
+	function reEnable(){
+		return true
+	}
+
+	if (typeof document.onselectstart!="undefined")
+	document.onselectstart=new Function ("return false")
+	else{
+	document.onmousedown=disableselect
+	document.onmouseup=reEnable
+	}
+	$(document).ready(
+		function()
+		{
+						
+			$('#dock0').Fisheye(
+				{
+					maxWidth: 10,
+					items: 'a',
+					itemsText: 'span',
+					container: '.dock-container0',
+					itemWidth: 90,
+					proximity: 90,
+					halign : 'center'
+				}
+			)
+			$('#dock2').Fisheye(
+				{
+					maxWidth: 10,
+					items: 'a',
+					itemsText: 'span',
+					container: '.dock-container2',
+					itemWidth: 90,
+					proximity: 90,
+					halign : 'center'
+				}
+			)
+			$('#dock3').Fisheye(
+				{
+					maxWidth: 10,
+					items: 'a',
+					itemsText: 'span',
+					container: '.dock-container3',
+					itemWidth: 90,
+					proximity: 90,
+					halign : 'center'
+				}
+			)
+			$('#dock4').Fisheye(
+				{
+					maxWidth: 10,
+					items: 'a',
+					itemsText: 'span',
+					container: '.dock-container4',
+					itemWidth: 90,
+					proximity: 90,
+					halign : 'center'
+				}
+			)
+			$('#dock5').Fisheye(
+				{
+					maxWidth: 10,
+					items: 'a',
+					itemsText: 'span',
+					container: '.dock-container5',
+					itemWidth: 90,
+					proximity: 90,
+					halign : 'center'
+				}
+			)
+			
+	$("#divCart").droppable({
+		drop: function() {
+			toCart(id, price,calorie,name,phone,nickname);
+			//$("#divCart").css("background-color", "#fff");
+			$('#divCart').css("border","1px solid #b8b8b8");
+
+		},
+		
+		over: function() {
+			//$("#divCart").css("background-color", "#fff7c4");
+			$('#divCart').css("border","2px #993333 solid");
+		},
+		
+		out: function() {
+			//$("#divCart").css("background-color", "#fff");
+			$('#divCart').css("border","2px #cc5555 solid");
+		}
+	});
+
+		}
+	);
+
+	
+//칼로리 보기
+	(function($){
+	    $(function(){
+			$("#toggleSwitchCalory").click(function() {
+				if (!toggleCalory) {
+					$(".divCaloryViews").each(function(index) {
+						$(this).show();
+					});
+					
+					$("#toggleSwitchCalory").attr("src", "modules/board/skins/yamnyam_foodlist/images/chart_curve.png");
+					toggleCalory = true;
+				}
+				else {
+					$(".divCaloryViews").each(function(index) {
+						$(this).hide();
+					});
+					
+					$("#toggleSwitchCalory").attr("src", "modules/board/skins/yamnyam_foodlist/images/chart_curve_off.png");
+					toggleCalory = false;
+				}
+			});
+			
+			$("#toggleSwitchPrice").click(function() {
+				if (!togglePrice) {
+					$(".divPriceViews").each(function(index) {
+						$(this).show();
+					});
+					
+					$("#toggleSwitchPrice").attr("src", "modules/board/skins/yamnyam_foodlist/images/won.png");
+					togglePrice = true;
+				}
+				else {
+					$(".divPriceViews").each(function(index) {
+						$(this).hide();
+					});
+					
+					$("#toggleSwitchPrice").attr("src", "modules/board/skins/yamnyam_foodlist/images/won_off.png");
+					togglePrice = false;
+				}
+			});
+			
+	    });
+	})(jQuery);
+
+	/******************************************
+	* 3.18 병웅 // 결제방식 선택을 위한 코드
+	*******************************************/ 
+	function ToggleToCard(e) {
+		$('.'+$(e).attr('class')).find(".toggleSwitchCard").attr("src", "modules/board/skins/yamnyam_foodlist/images/card_p.png");
+		$('.'+$(e).attr('class')).parent().find(".toggleSwitchCash").attr("src", "modules/board/skins/yamnyam_foodlist/images/cash.png");
+		$('.'+$(e).attr('class')).parent().find(".toggleSwitchCash").parent().css("font-weight", "normal");
+		$('.'+$(e).attr('class')).parent().find(".toggleSwitchCash").parent().css("color", "#cfcfcf");
+		$('.'+$(e).attr('class')).css("font-weight", "bold");
+		$('.'+$(e).attr('class')).css("color", "#000");
+		$('.'+$(e).attr('class')).parent().find(".payment").val("card");
+	}
+	
+	function ToggleToCash(e) {
+		$('.'+$(e).attr('class')).find(".toggleSwitchCash").attr("src", "modules/board/skins/yamnyam_foodlist/images/cash_p.png");
+		$('.'+$(e).attr('class')).parent().find(".toggleSwitchCard").attr("src", "modules/board/skins/yamnyam_foodlist/images/card.png");
+		$('.'+$(e).attr('class')).parent().find(".toggleSwitchCard").parent().css("font-weight", "normal");
+		$('.'+$(e).attr('class')).parent().find(".toggleSwitchCard").parent().css("color", "#cfcfcf");
+		$('.'+$(e).attr('class')).css("font-weight", "bold");
+		$('.'+$(e).attr('class')).css("color", "#000");
+		$('.'+$(e).attr('class')).parent().find(".payment").val("cash");
+	}
+	
+	
+	function togglePriceView() {
+		if (!togglePrice) {
+			$("#divPrice").show();
+		}
+		else {
+			$("#divPrice").hide();
+		}
+	}
+
+	/* 쿠키 관련 */
+	function getCookie( cookieName ) {
+		var search = cookieName + "=";
+		var cookie = document.cookie;
+
+		if( cookie.length > 0 ) {
+			startIndex = cookie.indexOf( cookieName );
+			
+			if( startIndex != -1 ) {
+				startIndex += cookieName.length;
+				endIndex = cookie.indexOf( ";", startIndex );
+				
+				if( endIndex == -1) endIndex = cookie.length;
+				
+				return unescape( cookie.substring( startIndex + 1, endIndex ) );
+			}
+			else {
+				return ;
+			}
+		}
+		else {
+			return ;
+		}
+	}
+
+
+	function setCookie( cookieName, cookieValue, expireDate ) {
+		var today = new Date();
+		today.setDate( today.getDate() + parseInt( expireDate ) );
+		document.cookie = cookieName + "=" + escape( cookieValue ) + "; path=/; expires=" + today.toGMTString() + ";";
+	 }
+ 
+	function getMyCookie( cookieName ) {
+		return getCookie( cookieName ) ;
+	 }
+ 
+	function deleteCookie( cookieName ) {
+		var expireDate = new Date();
+		
+		//어제 날짜를 쿠키 소멸 날짜로 설정한다.
+		expireDate.setDate( expireDate.getDate() - 1 );
+		document.cookie = cookieName + "= " + "; expires=" + expireDate.toGMTString() + "; path=/";
+	 }
+ 
+	function delCookie() {
+		//displayMessage(0);
+		
+		deleteCookie( 'product_data' );
+		
+		deleteCookie( 'spanPriceAmount' );
+		deleteCookie( 'spanCalorieAmount' );
+		deleteCookie( 'divOrderList' );
+		
+/* 20110427. 리팩토링중 정리
+		deleteCookie( 'product_name' );
+		deleteCookie( 'product_amount' );
+		deleteCookie( 'product_price' );
+*/		
+		deleteCookie( 'cartStatus' );
+	}
+
+	function shortName(name) {
+		if ( name.length > 6 ) {
+			name = name.substring(0,6);
+			name += '...';
+		}
+		
+		return name;
+	}
+
+	/* 장바구니 추가 */
+	function toCart(id,price2,calorie2,name,phone,nickname){
+			
+		var num = parseInt($("#numBox_"+id).val());
+		if (!num) num=1;
+		var price = parseInt(price2)*num;
+		
+		var calorie = parseInt(calorie2)*num;
+		if( isNaN(calorie) ) calorie = 0;
+		
+		var store_price = parseInt($("#store_price_"+nickname).html());
+
+		//여기서 추가옵션을 선택하게 하자.
+		if ($('#div'+id+' #select_opt').attr('value')) {
+			alert('추가옵션있다.');
+		}
+		
+		displayMessage(1);
+
+		if(num != 0) { 
+			var str="";
+			var str_store="";
+			var wizard_str="";
+			var payment_str="";
+			var wizard_str_store='#step5_option_'+nickname;
+			var wizard_str_content="";
+			
+			
+			// 상점에서 처음 추가시
+			if($("#"+nickname).html() == null){
+
+				// for wizard 2011. 05. 13
+				wizard_str = '<div id="step5_option_'+nickname+'" style="float:left;">';
+				wizard_str += '<div id="step5_option_'+nickname+'title" class="step5_option_title"><div class="step5_option_homeicon"></div><div style="margin:0 10px 0 5px;">'+nickname+'</div><div class="step5_option_paymentimg"></div></div>';
+
+				str+="<div id="+nickname+"><div id=store_content_"+nickname+" class='divStoreContent'>";
+					
+				str+="<div style='width:200px;'><span style='font-weight:bold; height:20px; width:200px; float:left'>"+nickname+"</span></div>";
+				
+				str+="<div style='border-bottom:1px solid #dfdfdf; padding-bottom:3px; margin-bottom:5px;'>지불방식선택 <div style='float:right; margin-top:-2px;'>";
+	
+				if (payment[nickname] == "현금|@|카드"){
+					str+="<a OnClick='javascript:ToggleToCash(this)' style='font-weight:bold;' class='forToggleSwitchCash"+id+"'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' />현금</a> <a OnClick='javascript:ToggleToCard(this)' style='color:#cfcfcf;' class='forToggleSwitchCard"+id+"'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</a><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";
+					payment_str+="<a OnClick='javascript:ToggleToCash(this)' style='font-weight:bold;' class='forToggleSwitchCash"+nickname+"'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' />현금</a> <a OnClick='javascript:ToggleToCard(this)' style='color:#cfcfcf;' class='forToggleSwitchCard"+nickname+"'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</a><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";
+				}
+				else if (payment[nickname] == "현금"){
+					str+="<img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' /><span style='font-weight:bold;'>현금</span> <strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</span></strike><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";				
+					payment_str+="<img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' /><span style='font-weight:bold;'>현금</span> <strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</span></strike><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";
+				}
+				else if (payment[nickname] == "카드"){
+					str+="<strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash.png' />현금</span></strike> <img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card_p.png' /><span style='font-weight:bold;'>카드</span><input type='hidden' class='payment' name=payment_"+nickname+" value='card'>";
+					payment_str+="<strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash.png' />현금</span></strike> <img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card_p.png' /><span style='font-weight:bold;'>카드</span><input type='hidden' class='payment' name=payment_"+nickname+" value='card'>";
+				}
+				
+				
+				str+="</div></div>";
+				
+				// for wizard 2011. 05. 13
+				wizard_str += '<div class="step5_lefttable"><table class="step5_table" cellspacing=0 cellPadding=5px><tr><th>상품명</th><th>수량</th><th>가격</th><th>합계</th></tr>';
+				wizard_str += '</table></div>';
+				wizard_str += '<div class="step5_righttable"><table class="step5_table" cellspacing=0 cellPadding=5px><tr><th>주문시 요구사항</th></tr>';
+				wizard_str += '<tr><td><input type="text" name="extra_words" id="extra_words'+nickname+'" class="extra_words" size="50" /><br/><br/></td></tr>';
+				wizard_str += '<tr><th>결제방식</th></tr>';
+				wizard_str += '<tr><td>'+payment_str+'</td></tr></table></div>';
+				wizard_str += '</div>';
+				
+				if('{$mid}'=='wizard_list' && '{$act}' == '') {
+					$('#step5_option').append(wizard_str);
+				}
+			}
+			// 상점이 존재할시
+			else {
+				str_store=" #store_content_"+nickname;
+			}
+			
+			// 상품을 새로 추가시
+			if($("#cart_"+id).html() == null){
+				str+="<div id=cart_"+id+" style='float:left; width:200px;'>";
+				str+="<span class=product_name>";
+				str+="<a OnClick='javascript:delCart("+id+")'><img src='modules/board/skins/yamnyam_foodlist/images/delete_icon.png' class='icon16px' /></a>";
+				str+=shortName(name);
+				str+="<br/><span class='divCaloryViews' style='font-size:11px; color:#666;'> ["+calorie+" KCal]</span></span>";
+				str+="<span class=product_price><span class=\"divPriceViews\"><span id=price_"+id+">"+price;
+				str+="</span>원</span></span>";
+				str+="<span class=product_amount>"+"<span id=num_"+id+">"+num+"</span>";
+				str+="개</span><br>";
+//				str+="<span id=calorie_"+id+">"+calorie+"</span>";
+//				str+="칼로리 ";
+				str+="</div>";
+				
+				wizard_str_content += '<tr id="step5_cart_'+id+'"><td>'+name+'</td><td>'+num+'</td><td>'+price+'원</td><td>'+(num*price)+'원</td></tr>';
+				
+				$("#store_price_"+nickname).html(0+price);
+				
+				var newData = new Array(id,nickname,name,num,price,phone,calorie);
+				data.push(newData);
+			}
+			// 이미 상품이 존재할시
+			else {
+				$("#num_"+id).html(parseInt($("#num_"+id).html())+num);
+				$("#price_"+id).html(parseInt($("#price_"+id).html())+price);			
+				$("#calorie_"+id).html(parseInt($("#calorie_"+id).html())+calorie);			
+				$("#store_price_"+nickname).html(store_price+price);
+				
+				for (i = 0 ; i < data.length; i++){
+					if(data[i][0] == id) {
+						data[i][3] += num;
+						data[i][4] += price;
+						//data[i][6] += calorie;
+						
+						$("#step5_cart_"+id).empty();
+						$("#step5_cart_"+id).append('<td>'+name+'</td><td>'+data[i][3]+'</td><td>'+price+'원</td><td>'+data[i][4]+'원</td>');
+						
+						break;
+					} 
+				}
+			}
+
+			// 상점에서 처음 추가시
+			if($("#"+nickname).html() == null){
+				str+="</div><hr></div>"
+				//str+="</div>소계:<span id=store_price_"+nickname+">"+price+"</span>원<br>";
+				//str+="칼로리 합:<span id=store_calorie_"+nickname+">"+calorie+"</span>칼로리<hr></div>";
+			}
+		}
+		else { 
+			str = "";
+		}
+		
+		if('{$mid}'=='wizard_list' && '{$act}' == '') {
+			$(wizard_str_store+" .step5_lefttable .step5_table").append(wizard_str_content);
+		}
+		
+		// html 태그를 추가하는 부분
+		$("#divCart .divOrder .divOrderList"+str_store).html($("#divCart .divOrder .divOrderList"+str_store).html()+str);
+		
+		// 11.3.27 병웅
+		// 가격 숨기기 시 상품을 추가하면 문제가 생겨서 추가
+		if (!togglePrice) {
+			$(".divPriceViews").each(function(index) {
+				$(this).hide();
+			});
+		}
+		if (!toggleCalory) {
+			$(".divCaloryViews").each(function(index) {
+				$(this).hide();
+			});
+		}
+		
+		// 여기부터는 데이터를 hidden으로 추가하여 결재시 보냄
+		strData="";
+
+		for (i =0 ; i < data.length; i++){		
+			strData += data[i][0]+"|"+data[i][1]+"|"+data[i][2]+"|"+data[i][3]+"|"+data[i][4]+"|"+data[i][5]+"|"+data[i][6]+"&&";
+		}
+		
+		$("#divCart #spanPriceAmount").html(parseInt($("#divCart #spanPriceAmount").html())+price);
+		$("#divCart #spanCalorieAmount").html(parseInt($("#divCart #spanCalorieAmount").html())+calorie);
+		$("#divCart #product_val").val(strData);
+		
+		// 쿠키 기록
+		setCookie( 'product_data', strData, 1);
+		setCookie( 'spanPriceAmount', $('#spanPriceAmount').html(), 1 );
+		setCookie( 'spanCalorieAmount', $('#spanCalorieAmount').html(), 1 );
+		setCookie( 'divOrderList', $('.divOrderList').html(), 1 );
+		
+	}
+
+
+	/* 장바구니 삭제 */
+	function delCart(id){
+		$("#spanPriceAmount").html(parseInt($("#spanPriceAmount").html()-parseInt($("#price_"+id).html())));
+		$("#spanCalorieAmount").html(parseInt($("#spanCalorieAmount").html()-parseInt($("#calorie_"+id).html())));
+		
+		//삭제되는 음식의 상점 닉네임을 불러오기
+		nickname = $("#cart_"+id).parent().parent().attr("id");
+		
+		//합계에 더해졌던 가격을 빼기
+		$("#store_price_"+nickname).html(parseInt($("#store_price_"+nickname).html())-parseInt($("#price_"+id).html()));
+		
+		var check_num=0;
+		
+		//
+		$("#cart_"+id).parent().find("div").each(function(i) {
+			check_num++;
+		});
+
+		if(check_num==4){
+			$("#cart_"+id).parent().parent().remove();
+			$("#step5_cart_"+id).parent().parent().parent().parent().remove();
+		}
+	
+		$("#cart_"+id).remove();
+		$("#step5_cart_"+id).remove();
+		
+		for (i = 0 ; i < data.length; i++){
+			if(data[i][0] == id){
+				data.splice(i,1);
+				break;
+			}
+		}
+		strData="";
+		
+		for (i =0 ; i < data.length; i++){		
+			strData += data[i][0]+"|"+data[i][1]+"|"+data[i][2]+"|"+data[i][3]+"|"+data[i][4]+"|"+data[i][5]+"|"+data[i][6]+"&&";
+		}
+		
+		$("#product_val").val(strData);
+			// 쿠키 기록	
+		setCookie( 'product_data', strData ,1);
+	
+		setCookie( 'divOrderList', $('.divOrderList').html(), 1 );
+		setCookie( 'spanPriceAmount', $('#spanPriceAmount').html(), 1 );
+		setCookie( 'spanCalorieAmount', $('#spanCalorieAmount').html(), 1 );
+
+/* 20110427. 리팩토링중 정리.
+		setCookie( 'product_name', $('#product_name').val(), 1 );
+		setCookie( 'product_amount', $('#product_amount').val(), 1 );
+		setCookie( 'product_price', $('#product_price').val(), 1 );
+*/
+	}
+
+	function changeImage(flag_) {
+		setCookie( 'flag', flag ,1);
+		
+		if (flag_ == 1)
+		{
+			flag = 0;
+			$('#divCart .fixingCart').css("background-image",'url("layouts/yamnyam_layout/images/pin.png")');
+			$('#divCart .fixingCart').css("margin-top",'-30px');
+			$('#divCart .fixingText').html("고정됨");
+			// 장바구니 고정
+		}
+		else
+		{
+			flag = 1;
+			$('#divCart .fixingCart').css("background-image",'url("layouts/yamnyam_layout/images/unpin.png")');
+			$('#divCart .fixingCart').css("margin-top",'-35px');
+			$('#divCart .fixingText').html("고정하기");
+			// 장바구니 고정 해제
+		}
+	}
+
+
+	/*장바구니 고정하기*/
+	(function($){
+	    $(function(){
+			$('#divCart .fixingCart').click(function(){
+				if(flag == 1){
+					changeImage(flag);
+					displayMessage(2);					
+				}
+				else{
+					changeImage(flag);
+					displayMessage(3);					
+				}
+			})
+	    });
+	})(jQuery);
+
+	// 20110404 김누리 스크롤 방식 변경 및 아주아주 약간의 최적화
+	(function($){
+	    $(function(){
+			$(document).ready(function() {			
+				var doHeight;
+				var divHeight;
+				var scrTop;
+
+				// for wizard 2011.05.13
+				if(('{$mid}'=='food_list' && '{$act}' == '') || ('{$mid}'=='restaurant_list' && '{$act}' == '') || ('{$mid}'=='wizard_list' && '{$act}' == '') ) {				
+					$(window).scroll(function() {
+						doHeight = $(document).height();
+						divHeight = $("#divCart").css("height");
+						divHeight = parseInt(divHeight.substring(0, divHeight.length-2));
+						
+						scrTop = $(window).scrollTop();
+	
+						if(flag >= 1){
+							if (scrTop < 220){
+								$("#divCart").css("margin-top", 36);
+							}
+							else{
+								// befor banner, 200
+								if ( scrTop + divHeight  < doHeight - 320 ) {
+									$("#divCart").css("margin-top", scrTop-190);
+								}
+							}
+						}
+					});
+				}
+			});
+	    });
+	})(jQuery);
+
+/* 2011.04.05 단축키 기능 추가. */
+$(function(){
+	$(document).ready(function() {
+			
+		//이대로 주문하기
+		$(document).bind('keydown', 'Ctrl+return', function(evt) {
+			document.divCartForm.submit();
+			return false;
+		});
+		
+		//주문서 초기화
+		$(document).bind('keydown', 'Alt+del', function(evt) {
+			delCookie();
+			location.reload();
+			return false;
+		});
+		
+		//핀 고정
+		$(document).bind('keydown', 'Alt+p', function(evt) {
+			if(flag == 1){
+				changeImage(flag);
+				displayMessage(2);					
+			}
+			else{
+				changeImage(flag);
+				displayMessage(3);					
+			}
+			return false;
+		});
+		
+		//ESC - 로그인 창 닫기
+		$(document).bind('keydown', 'esc', function(evt) {
+			$('#mask').hide();
+			$('#divLogin').hide();
+			$('#mask2').hide();
+			$('#divPreference1123').hide();
+			
+			$('.search_keyword').blur();
+			
+			return false;
+		});
+		
+		//단축키 보이기
+		$(document).bind('keydown', 'Alt+Shift', function(evt) {	
+			$(".ynyShortcut").show();
+			
+			return false;
+		});
+		
+		//단축키 보이기
+		$(document).bind('keydown', 'Shift+Alt', function(evt) {	
+			$(".ynyShortcut").show();
+			
+			return false;
+		});
+		
+		//단축키 숨기기
+		$(document).bind('keyup', 'Alt+Shift', function(evt) {
+			$(".ynyShortcut").hide();
+
+			return false;
+		});
+		
+		//단축키 숨기기
+		$(document).bind('keyup', 'Shift+Alt', function(evt) {
+			$(".ynyShortcut").hide();
+
+			return false;
+		});
+		
+		//메뉴이동 - 음식리스트
+		$(document).bind('keydown', 'Alt+1', function(evt) {
+			location.href="./food_list";
+			return false;
+		});
+		
+		//메뉴이동 - 상점리스트
+		$(document).bind('keydown', 'Alt+2', function(evt) {
+			location.href="./restaurant_list";
+			return false;
+		});
+		
+		//메뉴이동 - 오늘의식단
+		$(document).bind('keydown', 'Alt+3', function(evt) {
+			location.href="./today_menu_list";
+			return false;
+		});
+		
+		//메뉴이동 - 마이페이지
+		$(document).bind('keydown', 'Alt+4', function(evt) {
+			location.href="./?mid=mypage&act=dispMemberInfo";
+			return false;
+		});
+		
+		//로그인 창
+		$(document).bind('keydown', 'Shift+l', function(evt) {
+			if(!'{$is_logged}') {
+				var maskHeight = $(document).height();
+				var maskWidth = $(window).width();
+				
+				$("#mask").fadeTo("slow", 0.3);
+				
+				$('#mask').css('width', maskWidth);
+				$('#mask').css('height', maskHeight);
+
+				$("#mask").show();
+
+				var winH = $(window).height();
+		        var winW = $(window).width();
+
+				$("#divLogin").css('top',  $(window).scrollTop()+winH/2-$("#divLogin").height()/2);
+		        $("#divLogin").css('left', winW/2-$("#divLogin").width()/2);
+		
+				//인터넷 익스플로러에서 오류남
+				$("#divLogin").fadeIn(1000, function(){
+					//$(this).css('filter','');
+				});
+				
+				$("#id_box").focus();
+			}
+			return false;
+		});
+	});
+});	
+
+	/*장바구니 초기 셋팅*/
+	// 3.23일 쿠키용량제한문제로 수정 -병웅
+(function($){
+	$(document).ready(function() {
+		var data_str = getMyCookie('product_data');
+		if (data_str != null)
+		{
+
+			var data_temp = data_str.split("&&");
+
+			for (i=0; i<data_temp.length-1; i++ )
+			{
+			  	data[i]=data_temp[i].split('|');
+				data[i][0] = parseInt(data[i][0]);
+				data[i][3] = parseInt(data[i][3]);
+				data[i][4] = parseInt(data[i][4]);				
+
+				var name = data[i][2];
+				var nickname=data[i][1];
+				var id= data[i][0];
+				var phone=data[i][5];
+				var num = data[i][3];
+				var price = data[i][4];
+				var calorie = data[i][6];
+				
+				
+				var str="";
+				var str_store="";
+				var wizard_str="";
+				var wizard_str_store='#step5_option_'+nickname;
+				var wizard_str_content="";
+				var payment_str="";
+
+				// 상점에서 처음 추가시
+				if($("#"+nickname).html() == null){
+
+					// for wizard 2011. 05. 13
+					wizard_str = '<div id="step5_option_'+nickname+'" style="float:left;">';
+					wizard_str += '<div id="step5_option_'+nickname+'title" class="step5_option_title"><div class="step5_option_homeicon"></div><div style="margin:0 10px 0 5px; font-weight:bold;">'+nickname+'</div><div class="step5_option_paymentimg"></div></div>';
+
+					str+="<div id="+nickname+"><div id=store_content_"+nickname+" class='divStoreContent'>";
+					
+					str+="<div style='width:200px;'><span style='font-weight:bold; height:20px; width:200px; float:left'>"+nickname+"</span></div>";
+					
+					str+="<div style='border-bottom:1px solid #dfdfdf; padding-bottom:3px; margin-bottom:5px;'>지불방식선택 <div style='float:right; margin-top:-2px;'>";
+							
+					if (payment[nickname] == "현금|@|카드"){
+					str+="<a OnClick='javascript:ToggleToCash(this)' style='font-weight:bold;' class='forToggleSwitchCash"+nickname+"'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' />현금</a> <a OnClick='javascript:ToggleToCard(this)' style='color:#cfcfcf;' class='forToggleSwitchCard"+nickname+"'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</a><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";
+					payment_str+="<a OnClick='javascript:ToggleToCash(this)' style='font-weight:bold;' class='forToggleSwitchCash"+nickname+"'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' />현금</a> <a OnClick='javascript:ToggleToCard(this)' style='color:#cfcfcf;' class='forToggleSwitchCard"+nickname+"'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</a><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";
+					}
+					else if (payment[nickname] == "현금"){
+						str+="<img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' /><span style='font-weight:bold;'>현금</span> <strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</span></strike><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";
+						payment_str+="<img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash_p.png' /><span style='font-weight:bold;'>현금</span> <strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card.png' />카드</span></strike><input type='hidden' class='payment' name=payment_"+nickname+" value='cash'>";
+					}
+					else if (payment[nickname] == "카드"){
+						str+="<strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash.png' />현금</span></strike> <img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card_p.png' /><span style='font-weight:bold;'>카드</span><input type='hidden' class='payment' name=payment_"+nickname+" value='card'>";
+						payment_str+="<strike style='color:red'><span style='color:#ccc;'><img class='toggleSwitchCash' src='modules/board/skins/yamnyam_foodlist/images/cash.png' />현금</span></strike> <img class='toggleSwitchCard' src='modules/board/skins/yamnyam_foodlist/images/card_p.png' /><span style='font-weight:bold;'>카드</span><input type='hidden' class='payment' name=payment_"+nickname+" value='card'>";
+					}
+				
+				
+					str+="</div></div>";
+
+					// for wizard 2011. 05. 13
+					wizard_str += '<div class="step5_lefttable"><table class="step5_table" cellspacing=0 cellPadding=5px><tr><th>상품명</th><th>수량</th><th>가격</th><th>합계</th></tr>';
+					wizard_str += '</table></div>';
+					wizard_str += '<div class="step5_righttable"><table class="step5_table" cellspacing=0 cellPadding=5px><tr><th>주문시 요구사항</th></tr>';
+					wizard_str += '<tr><td><input type="text" name="extra_words" id="extra_words'+nickname+'" class="extra_words" size="50" /><br/><br/></td></tr>';
+					wizard_str += '<tr><th>결제방식</th></tr>';
+					wizard_str += '<tr><td>'+payment_str+'</td></tr></table></div>';
+					wizard_str += '</div>';
+					
+					if('{$mid}'=='wizard_list' && '{$act}' == '') {
+						$('#step5_option').append(wizard_str);
+					}
+				}
+				// 상점이 존재할시
+				else {
+					str_store=" #store_content_"+nickname;
+					
+				}
+				
+				// 상품을 새로 추가시
+				if($("#cart_"+id).html() == null){
+					str+="<div id=cart_"+id+" style='float:left; width:200px;'>";
+					str+="<span class=product_name>";
+					str+="<a OnClick='javascript:delCart("+id+")' href=#><img src='modules/board/skins/yamnyam_foodlist/images/delete_icon.png' class='icon16px' /></a>";
+					str+=shortName(name);
+					str+="<br/><span class='divCaloryViews' style='font-size:11px; color:#666;'> ["+calorie+" KCal]</span></span>";
+					str+="<span class=product_price><span class=\"divPriceViews\"><span id=price_"+id+">"+price;
+					str+="</span>원</span></span>";
+					str+="<span class=product_amount>"+"<span id=num_"+id+">"+num+"</span>";
+					str+="개</span><br>";
+	//				str+="<span id=calorie_"+id+">"+calorie+"</span>";
+	//				str+="칼로리 ";
+					str+="</div>";
+					
+					wizard_str_content += '<tr id="step5_cart_'+id+'"><td>'+name+'</td><td>'+num+'</td><td>'+(price/num)+'원</td><td>'+price+'원</td></tr>';
+				}
+
+				// 상점에서 처음 추가시
+				if($("#"+nickname).html() == null){
+					str+="</div><hr></div>";
+				}					
+					
+				// html 태그를 추가하는 부분
+				$("#divCart .divOrder .divOrderList"+str_store).html($("#divCart .divOrder .divOrderList"+str_store).html()+str);
+				
+				if('{$mid}'=='wizard_list' && '{$act}' == '') {
+					$(wizard_str_store+" .step5_lefttable .step5_table").append(wizard_str_content);
+				}
+
+			}
+
+		}
+
+		//$('.divOrderList').html(getMyCookie('divOrderList'));
+				
+		// 여기부터는 데이터를 hidden으로 추가하여 결재시 보냄
+		strData="";
+		for (i =0 ; i < data.length; i++){		
+			strData += data[i][0]+"|"+data[i][1]+"|"+data[i][2]+"|"+data[i][3]+"|"+data[i][4]+"|"+data[i][5]+"|"+data[i][6]+"&&";
+		}
+		$("#product_val").val(strData);
+
+		$("#divCart #spanPriceAmount").html(getMyCookie('spanPriceAmount'));
+		$("#divCart #spanCalorieAmount").html(getMyCookie('spanCalorieAmount'));
+
+/* 20110427 리팩토링중 정리
+		$("#product_name").val(getMyCookie('product_name'));
+		$("#product_amount").val(getMyCookie('product_amount'));
+		$("#product_price").val(getMyCookie('product_price'));
+*/
+
+		var flag = getMyCookie('flag');
+
+		changeImage(flag);
+	});
+})(jQuery);
+
+
+/* 로긴 박스 초기화 */
+	function clearbox(){
+		$("#placeholder_id").css('display','');
+		$("#placeholder_password").css('display','');
+		document.login_form_w.user_id.value = "";
+		document.login_form_w.password.value = "";
+	}
+// ]]>
+</script>
+
+<div id="layoutSiteMainWrap">
+<div id="layoutSiteMain">
+	<div id="divShortcut" class="ynyShortcut">
+		<div id="scLogin">
+			<div style="position:relative;">
+				<div class="keyboardShortCut autosize" style="position:absolute; left:105px; top:28px;">Shift+L</div>
+			</div>
+		</div>
+		<div id="scMainMenu">
+			<div style="position:relative;">
+				<div class="keyboardShortCut autosize" style="position:absolute; left:70px; top:120px;">Alt+1</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:190px; top:100px;">Alt+2</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:310px; top:115px;">Alt+3</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:430px; top:70px;">Alt+4</div>
+			</div>
+		</div>
+	</div>
+	
+	<div id="layoutHeader" class="header" oncontextmenu="return false" ondragstart="return false" onselectstart="return false">
+		<div class="logo">
+			<!--@if($layout_info->logo_image)--><a href="{$layout_info->logo_url}"><img src="{$layout_info->logo_image}" alt="logo" border="0" class="iePngFix" /></a><!--@else-->&nbsp;<!--@end-->
+		</div>
+		
+		<div class="login_info">
+			<!--@if(!$is_logged)-->
+				<div class="login_infoWrap">
+					<a id="buttonLogin" href="#" ><img onclick="clearbox();" src="images/loginButton.png" /></a>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+					<a href="{getUrl('act','dispMemberSelectType','mid','mypage')}"><img src="images/joinButton.png"/></a>
+				</div>
+			<!--@else-->
+				<div class="login_infoWrap2">
+					<div style="margin-top:0px; float:left;">
+	                	<a style="color:#0090da; font-weight:bold;">환영합니다! {$logged_info->user_name}</a>님!
+	                </div>
+					<div style="margin-top:-2px; float:right;" >
+	                    <!--@foreach($logged_info->group_list as $key => $val)-->
+	                        <!--@if($val=="상점회원" || $val=="관리그룹")-->
+	                        
+	                            <a href="{getUrl('mid','restaurant_list','document_srl','','act','dispBoardWrite')}"><img src="images/register_shop.png" /></a>
+	                        <!--@end-->
+	                    <!--@end-->
+	                	<a href="{getUrl('act','dispMemberLogout')}">
+	                	  	<img src="images/button_logout.png" />
+	                    </a>
+	                </div>
+				</div>
+			<!--@endif-->
+		</div>
+		
+		<div class="account">
+		</div>
+		
+		<div class="gnb">
+        	<div id="mainmenu">
+                <div class="dock0" id="dock0">
+                    <div class="dock-container0">
+						<!--@if(($mid=='wizard_list' && $act == '') ||($mid=='wizard_list' && $act == 'dispBoardWrite')||($mid=='wizard_list' && $act == 'dispBoardDelete'))-->
+	                        <div>
+								<a class="dock-item0" href="./wizard_list"><img src="images/menu_wizard_list_p.png" /><span></span></a>
+							</div>
+						<!--@else-->
+	                        <div>
+								<a class="dock-item0" href="./wizard_list"><img src="images/menu_wizard_list.png" /><span></span></a>
+							</div>
+						<!--@endif-->
+					</div>
+                </div>
+                <div class="dock2" id="dock2">
+                    <div class="dock-container2">
+						<!--@if(($mid=='food_list' && $act == '') ||($mid=='food_list' && $act == 'dispBoardWrite')||($mid=='food_list' && $act == 'dispBoardDelete'))-->
+	                        <div>
+								<a class="dock-item2" href="./food_list"><img src="images/menu_food_list_p.png" /><span></span></a>
+							</div>
+						<!--@else-->
+	                        <div>
+								<a class="dock-item2" href="./food_list"><img src="images/menu_food_list.png" /><span></span></a>
+							</div>
+						<!--@endif-->
+					</div>
+                </div>
+                <div class="dock3" id="dock3">
+                    <div class="dock-container3">
+						<!--@if(($mid=='restaurant_list' && $act == '') ||($mid=='restaurant_list'&& $act == 'dispBoardWrite') ||($mid=='restaurant_list'&& $act == 'dispBoardDelete'))-->
+	                        <div>
+								<a class="dock-item3" href="./restaurant_list"><img src="images/menu_restaurant_list_p.png" /><span></span></a>
+							</div>
+						<!--@else-->
+	                        <div>
+								<a class="dock-item3" href="./restaurant_list"><img src="images/menu_restaurant_list.png" /><span></span></a>
+							</div>
+						<!--@endif-->
+                    </div>
+                </div>
+                <div class="dock4" id="dock4">
+                    <div class="dock-container4">
+						<!--@if(($mid=='today_menu_list' && $act == '') || ($mid=='today_menu_list' && $act == 'dispBoardWrite')|| ($mid=='today_menu_list' && $act == 'dispBoardDelete'))-->
+		                    <div>
+		                    	<a class="dock-item4" href="./today_menu_list"><img src="images/menu_today_menu_p.png" /><span></span></a>
+		                    </div>
+						<!--@else-->
+	                        <div>
+	                        	<a class="dock-item4" href="./today_menu_list"><img src="images/menu_today_menu.png" /><span></span></a>
+	                        </div>
+						<!--@endif-->
+                    </div>
+                </div>
+                <div class="dock5" id="dock5">
+                    <div class="dock-container5">
+						<!--@if(!$is_logged)-->
+	                        <div>
+	                        	<a id="buttonLogin3" class="dock-item5" href="#" onClick="alerting()"><img src="images/menu_my_page.png" /><span></span></a>
+	                        </div>
+						<!--@else-->
+							<!--@if(($act != '' && $act != 'dispBoardWrite' && $mid == 'today_menu_list') || ($act == 'dispMemberRecentOrderedList' || $act == 'dispMemberOrderedList')|| $mid=='mypage')-->
+		                        <div>
+			                        <a class="dock-item5" href="./?mid=mypage&act=dispMemberInfo"><img src="images/menu_my_page_p.png" /><span></span></a>
+								</div>
+							<!--@else-->
+		                        <div>
+		                        	<a class="dock-item5" href="./?mid=mypage&act=dispMemberInfo"><img src="images/menu_my_page.png" /><span></span></a>
+		                        </div>
+							<!--@endif-->
+						<!--@endif-->
+                    </div>
+                </div>
+            </div>
+		</div>
+	</div>
+		
+	<div id="layoutBody" class="body">
+		<!-- for wizard 2011.05.13 -->
+		<!--@if($mid=='food_list' || $mid=='restaurant_list' || $mid=='wizard_list' )-->
+			<div class="content" style="width:758px;">{$content}</div>
+			
+			<script type="text/javascript">
+				function alerting(){
+					alert("로그인해주세요.");
+					return false;
+				}
+					
+				function checkform(){
+					var return_method=1;
+					$(document).find(".payment").each(function() {
+						if($(this).val() == ''){
+							alert("결제방법을 선택해주세요(현금/카드)");
+							return_method=0;
+							return false;
+						}
+					});
+					if (return_method==0) return false;
+					
+					if (data.length == 0 ){
+						alert("장바구니에 담아주세요.");
+						return false;
+					}
+					else {
+					//최소금액 체크
+						var objName= new Array();
+						// 초기화
+						for (i = 0 ; i < data.length; i++){
+							sumPrice[data[i][1]]=0;
+						}
+						
+						// 가게별로 총 금액합을 구함
+						for (i = 0 ; i < data.length; i++){
+							var change=1;
+							sumPrice[data[i][1]] += data[i][4]*data[i][3];
+							
+							for (j = 0 ; j < objName.length; j++){
+								if(data[i][1] == objName[j]){
+									change=0;
+								}
+							}
+							
+							if (change==1) {
+								objName.push(data[i][1]);
+							}
+							
+						}
+						
+						// 가게별 총 금액와 최소금액을 연산
+						for (i = 0 ; i < objName.length; i++){
+							if (minimumPrice[objName[i]] > sumPrice[objName[i]]){
+								alert(objName[i]+"의 주문최소금액은 "+minimumPrice[objName[i]]+"원입니다.");
+								return false;
+							}
+						}
+						
+						// 20110515. 추가요구사항 가져가기
+						var extra_words_data = "";
+						$('.extra_words').each(
+							function() {
+								extra_words_data += $(this).attr('value');
+								extra_words_data += "&&";
+							}
+						);
+						$('#extra_words_data').attr('value', extra_words_data);
+						
+						// 20110515. 지도 입력사항 가져가기
+						$('#address_value_data').attr('value', $('#address_value').attr('value'));
+						
+						return true;
+					}
+				}
+			</script>
+			
+			<!-- 슬라이드 레이어 -->
+			<!--@if($act != 'dispBoardWrite' && $act != 'dispMemberOrderedList' && $act != 'dispMemberRecentOrderedList')-->
+				<div style="float:right; position:relative; width:220px; margin-top:36px; margin-right:8px;">
+					<!--@if($layout_info->banner_image)--><a href="{$layout_info->banner_url}"><img src="{$layout_info->banner_image}" alt="banner" border="0" class="iePngFix" /></a><!--@else-->&nbsp;<!--@end-->
+				</div>
+				<div id="divCart">
+				
+					<div id="divShortcut" class="ynyShortcut">
+						<div id="scCart">
+							<div style="position:relative;">
+								<div class="keyboardShortCut autosize" style="position:absolute; left:160px; top:0px;">Alt+P</div>
+								<div class="keyboardShortCut autosize" style="position:absolute; left:170px; top:100px;">Alt+Del</div>
+							</div>
+						</div>
+					</div>
+					
+					<form action="." method="post" name="divCartForm" onSubmit="return checkform();">
+						<div class="divOrderTitle">
+						    <div id="droptheitem" style="position: absolute; margin-left:-2px;visibility: hidden;">
+						    	<img src="images/drop.gif"><img src="images/droptheitem.gif" style="margin-top:-1px;margin-left:0px">
+						    </div>
+					    	<div class="fixingText">고정하기</div>
+					    </div>
+					    
+						<div class="fixingCart"></div>
+						
+						<div class="divOrderToolbar">
+					       	<div class="divOrderToolbarLeft">
+					        	<img id="toggleSwitchCalory" src="images/chart_curve_off.png" class="icon16px" alt="칼로리보기" />
+					            <img id="toggleSwitchPrice" src="images/won.png" class="icon16px" alt="개별가격보기" />
+					        </div>
+					    	<div class="divOrderToolbarRight">
+						    	<a href="#" onClick="delCookie(); location.reload();">
+						    		<div style="width:76px; float:right; padding-top:2px;">주문서초기화</div>
+						    		<div style="width:20px; float:right;"><img src="images/basket_remove.png" class="icon16px" /></div>
+						    	</a>
+					        </div>
+					    </div>
+						<div class="divOrder">
+							<b>{$logged_info->user_name}님의 주문서</b>
+							<hr />
+							<table width="100%" border="0" cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="110">상품명</td>
+								<td width="55" align="right">
+					            	<div class="divPriceViews">
+					                	가격
+					                </div>
+					            </td>
+								<td width="35" align="right">수량</td>
+							</tr>
+							</table>
+							<hr />
+							<div class="orderListWrap">
+					            <div class="divOrderList">
+					            </div>
+							</div>
+					        <hr />
+						</div>
+						<div class="divOrderStatus">
+							<table width="100%" border="0" cellpadding="0" cellspacing="0">
+								<tr>
+									<td width="100%">
+										<b style="width:50px;float:left;">합계</b><span style="width:150px;float:left;text-align:right;"><b><span id="spanPriceAmount">0</span>원</span></b><br /><hr />
+					                    <div class="divCaloryViews">
+											<b style="width:50px;float:left;">총열량</b><span style="width:150px;float:left;text-align:right;"><b><span id="spanCalorieAmount">0</span>KCal</span></b>
+					                        <br />
+					                    </div>
+									</td>
+								</tr>
+								<tr>
+									<td height="10">
+											<input type="hidden" name="mid" value="order_list">
+											<input type="hidden" name="act" value="dispOrderConfirm">
+											<input type="hidden" name="product_data" id="product_val" value="">
+											<input type="hidden" name="extra_words_data" id="extra_words_data" value="">
+											<input type="hidden" name="address_value_data" id="address_value_data" value="">
+											<!-- 20110428. 리팩토링 중 제거			
+											<input type="hidden" name="notification" id="notification" value="2">
+											-->
+									</td>
+								</tr>
+							</table>
+						</div>
+				
+						<div class="divOrderButton">
+							<div id="divShortcut" class="ynyShortcut">
+								<div id="scOrder">
+									<div style="position:relative;">
+										<div class="keyboardShortCut autosize" style="position:absolute; left:120px; top:40px;">Ctrl+Enter</div>
+									</div>
+								</div>
+							</div>
+							
+							<!--@if(!$is_logged && $mid!='wizard_list')-->
+								<a class="buttonLogin2" href="./" onclick="return alerting()"><img src="images/button_bill.png"/></a>
+							<!--@else if($mid!='wizard_list')-->
+								<input type="image" src="images/button_bill.png">
+							<!--@endif-->
+						</div>
+					</form>
+				</div>
+			<!--@endif-->
+		<!--@else-->
+			<div class="content" style="width:982px;">{$content}</div>
+		<!--@end-->
+	</div>
+		
+	<div id="layoutFooter" class="footer">
+		<div id="divBottomMenu">
+			<span style="margin-left:50px; margin-right:50px;"><a href="./notice"><img src="images/noticeButton.png"/></a></span>|
+			<span style="margin-left:50px; margin-right:50px;"><a href="./guide"><img src="images/infoButton.png"/></a></span>| 
+			<span style="margin-left:50px; margin-right:50px;"><a href="./alliance"><img src="images/coopinfoButton.png"/></a></span>|
+			<span style="margin-left:50px; margin-right:50px;"><a href="./clause"><img src="images/usage_terms.png"/></a></span>
+		</div>
+		
+		<div id="divCopyright">
+		</div>
+	</div>
+</div>
+</div>
+<script type="text/javascript">
+
+</script>
+
+<div id="boxes" onload="clearbox();">
+    <div id="divLogin" class="window">
+		<div class="close_button"><a href="./" class="close"><img src="images/loginbox_x.png" /></a></div>
+		<div class="windowHeader"></div>
+		<div class="windowBody">
+			<img widget="login_info" skin="yamNyam_login" />
+		</div>
+		<div class="windowFooter">
+		</div>
+    </div>
+ 
+    <div id="mask"></div>
+</div>
+
+<div id="toastMessage_0" class="toastMessages"></div>
+<div id="toastMessage_1" class="toastMessages"></div>
+<div id="toastMessage_2" class="toastMessages"></div>
+<div id="toastMessage_3" class="toastMessages"></div>
+
+
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-22665202-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+<!--@end-->

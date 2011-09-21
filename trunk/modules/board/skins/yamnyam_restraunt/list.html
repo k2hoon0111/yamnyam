@@ -1,0 +1,421 @@
+<include target="_header.html" />
+
+<script type="text/javascript" src="js/jquery.draggable.js"></script>
+<script>
+var payment = new Object();
+$(document).ready(
+	function()
+	{
+		$('#dock').Fisheye(
+			{
+				maxWidth: 9,
+				items: 'a',
+				itemsText: 'span',
+				container: '.dock-container',
+				itemWidth: 43,
+				proximity: 90,
+				halign : 'center'
+			}
+		)
+	}
+);
+</script>
+
+<script type="text/javascript">
+// <![CDATA[
+	function selectCategory(category){
+		$(".rest_category").attr({value:category});
+	}
+
+// ]]> 
+</script>
+
+<div id="divRestaurantListMain">
+
+	<include cond="$oDocument->isExists()" target="_read.html" />
+
+	<div id="divShortcut" class="ynyShortcut">
+		<div id="scCategory">
+			<div style="position:relative;">
+				<div class="keyboardShortCut autosize" style="position:absolute; left:0px; top:51px;">Shift+1</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:43px; top:51px;">Shift+2</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:86px; top:51px;">Shift+3</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:129px; top:51px;">Shift+4</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:172px; top:51px;">Shift+5</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:216px; top:51px;">Shift+6</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:258px; top:51px;">Shift+7</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:301px; top:51px;">Shift+8</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:344px; top:51px;">Shift+9</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:387px; top:51px;">Shift+0</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:80px; top:116px;">Shift+F</div>
+			</div>
+		</div>
+	</div>
+	<div id="divCategory">
+		<form action="{getUrl()}" method="get" onsubmit="return procFilter(this, search)" id="rest_search">
+		<!--@if($vid)-->
+		<input type="hidden" name="vid" value="{$vid}" />
+		<!--@end-->
+		<input type="hidden" name="mid" value="{$mid}" />
+	
+		<div id="search_left">
+			<br />
+			<input type="hidden" name="category" value="{$category}" class="rest_category" />
+			<div class="dock" id="dock">
+				<div class="dock-container">
+					<div style="margin-left:-35px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_0<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="getElementsByName('category')[0].value='';xGetElementById('rest_search').submit();return false;" id="category_0"/>
+						<span></span></a>&nbsp
+					</div>
+			<!--@foreach($category_list as $val)-->
+				<!--@if($val->depth == 0)-->
+					<!--@if($val->title=="한식")-->
+					<div style="margin-left:8px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_1<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='중식')-->
+					<div style="margin-left:51px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_2<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='일식')-->
+					<div style="margin-left:90px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_3<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}" />
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='양식')-->
+					<div style="margin-left:140px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_4<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='분식')-->
+					<div style="margin-left:180px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_5<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='치킨')-->
+					<div style="margin-left:220px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_6<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='피자')-->
+					<div style="margin-left:260px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_7<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='보쌈')-->
+					<div style="margin-left:300px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_8<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@elseif($val->title=='기타/주류')-->
+					<div style="margin-left:340px; width:43px; height:43px">
+						<a class="dock-item">
+						<img src="../yamnyam_foodlist/images/button_category_10<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('rest_search').submit();return false;" id="category_{$val->category_srl}"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@end-->
+				<!--@end-->
+			<!--@end-->
+				</div>
+			</div>        
+			<div class="search_wrap">
+				<div class="search_text">
+					<input type="text" name="search_keyword" value="{htmlspecialchars($search_keyword)}" class="inputTypeText search_keyword" size="40"/>
+				</div>
+				<div class="search_button" >
+					<a href="#" onclick="xGetElementById('fo_search2').submit();return false;" style="background-image:none;"><img src="../yamnyam_foodlist/images/search.png" /></a>
+				</div>
+			</div>
+		</div>
+		<!--<div id="search_right"></div>-->
+	</div>
+	</form>
+</div>
+	
+	<div id="divRestaurantList">
+    
+		<!-- 목록 출력 -->
+		<form action="./" method="get">
+		    <div id="tableRestaurantList">
+			
+				<!--// 게시물이 없으면 등록된 글이 없음을 표시 -->
+				<!--@if(!$document_list && !$notice_list)-->
+							{$lang->no_documents}
+				<!--@else-->
+			
+			{@ // 상점의 이름으로부터 상점이 설정한 최소값을 구한다.
+								
+				
+				$oDB = &DB::getInstance();
+
+				$result = $oDB->_query("SELECT nick_name FROM yman_documents where module_srl = 141;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$nickname = (array)$output;
+
+				}
+			<!--@for($i=0;$i<count($nickname);$i++)-->
+				{@
+				$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '".$nickname[$i]->nick_name."' and module_srl = 141 limit 1) and var_idx=1 limit 1;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$temp = (array)$output;
+				
+				// 상점의 이름으로부터 상점 결제방법을 구한다.
+				$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '".$nickname[$i]->nick_name."' and module_srl = 141 limit 1) and var_idx=3 limit 1;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$payment = (array)$output;
+			}
+			<!-- // 드래그 앤 드랍 -->
+			<script type="text/javascript">
+				// <![CDATA[
+				minimumPrice['{$nickname[$i]->nick_name}']={$temp[value]};
+				payment['{$nickname[$i]->nick_name}']="{$payment[value]}";
+				// ]]>
+			</script>
+		<!--@end-->
+			
+					{@ $cell_no = 0; }
+					<!--// 일반 글 출력 -->
+					<!--@foreach($document_list as $no => $document)-->
+				
+						{@
+							$today=mktime();
+							$current_day = date('w', $today);
+							$current_time = date('G', $today);
+							
+							$temp_current = 0;
+							$current_time_str = 0;
+						}
+						<!--@for($temp_i=0; $temp_i<7; $temp_i++)-->
+							<!--@if($temp_i==$current_day)-->
+								<!--@for($temp_j=0; $temp_j<24; $temp_j++)-->
+									<!--@if ($temp_j==$current_time)-->
+										{@
+											$temp_current++;
+											$current_time_str = $temp_current;
+										}
+									<!--@else-->
+										{@
+											$temp_current++;
+										}
+									<!--@end-->
+								<!--@end-->
+							<!--@else-->
+								<!--@for($temp_j=0; $temp_j<24; $temp_j++)-->
+									{@
+										$temp_current++;
+									}
+								<!--@end-->
+							<!--@end-->
+						<!--@end-->
+
+						<!--@if(substr($document->getExtraValue(9) ,$current_time_str-1, 1))-->
+							{@$closed='N';}
+							<div class="store_list arrow_cell_{$cell_no}">
+						<!--@else-->
+							{@$closed='Y';}
+							<div class="store_list_closed arrow_cell_{$cell_no}">
+						<!--@end-->
+							<input type="hidden" value="{getUrl('document_srl',$document->document_srl,'listStyle',$listStyle,'cpage','')}" class="arrow_cell_{$cell_no}_address">
+							{@$cell_no++;}
+								<div class="store_list_top" style="width:750px; height:29px; vertical-align:middle;">
+									<!-- 2011/04/06 평점출력 제거. 김누리.
+									{@ $width=70*(float)($document->getExtraValue(8)/$document->get('voted_count'))*0.1;}
+									<div id="small_star_on" style="width:{$width}px"></div>
+									<div id="small_star_off">
+										<span class="grade">
+											{round((float)($document->getExtraValue(8)/$document->get('voted_count')),2)}
+										</span>
+									</div>
+									-->
+									<div class="store_list_top_title" style="width:auto; float:left; height:28px; position:relative;">
+									<!--@if($closed=='N')-->
+										<div style="margin-left:10px; width:auto; border:1px solid #2c98c0; background-color:#37bbed; height:22px; padding-top:6px;">
+									<!--@else-->
+										<div style="margin-left:10px; width:auto; border:1px solid #797979; background-color:#949494; height:22px; padding-top:6px;">
+									<!--@end-->
+											<a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}" style="color:#fff; font-weight:bold; font-size:13px; padding-left:7px; padding-right:7px;">
+												{$document->getTitle()}
+											</a>
+										</div>
+									</div>
+									<div style="float:right; width:28px; padding-top:9px; padding-right:5px;">
+											{$category_list[$document->get('category_srl')]->title}
+									</div>
+									<div class="store_list_top_type" style="width:25px; float:right; padding-top:5px; border-left:1px solid #ccc; padding-left:7px; padding-bottom:5px;">
+										<!--@if($category_list[$document->get('category_srl')]->title=="한식")-->
+											<img src="./images/type_1.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="중식")-->
+											<img src="./images/type_2.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="일식")-->
+											<img src="./images/type_3.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="양식")-->
+											<img src="./images/type_4.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="분식")-->
+											<img src="./images/type_5.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="치킨")-->
+											<img src="./images/type_6.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="피자")-->
+											<img src="./images/type_7.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="보쌈")-->
+											<img src="./images/type_8.png" />
+										<!--@else if($category_list[$document->get('category_srl')]->title=="기타/주류")-->
+											<img src="./images/type_9.png" />
+										<!--@end-->
+									</div>
+								<!--// 사용자 선언 확장변수일 경우 -->
+									<div class="store_list_top_type" style="width:145px; float:right; padding-top:9px; border-left:1px solid #ccc; padding-bottom:5px; text-align:center;">
+										<span style="font-size:11px; font-weight:bold; color:#AAA;">영업시간</span>
+										{$document->getExtraValueHTML(6)}~{$document->getExtraValueHTML(7)}
+									</div>
+									<div class="store_list_top_type" style="width:140px; float:right; padding-top:9px; border-left:1px solid #ccc; padding-bottom:5px; text-align:center;">
+										<span style="font-size:11px; font-weight:bold; color:#AAA;">최소배달금액</span>
+										{number_format($document->getExtraValueHTML(1))}원
+									</div>
+									<div cond="$document->getExtraValueHTML(3)== '현금, 카드'" style="margin-left:30px; float:right; padding-top:4px; padding-right:5px; border-left:0px solid #ccc; font-size:11px;">
+										<img src="./images/cash.png" style="vertical-align:text-bottom" /> 현금결제가능 &nbsp;
+										<img src="./images/card.png" style="vertical-align:text-bottom" /> 카드결제가능
+									</div>
+									<div cond="$document->getExtraValueHTML(3)== '현금'" style="margin-left:30px; float:right; padding-top:4px; padding-right:5px;  border-left:0px solid #ccc; font-size:11px;"> 
+										<img src="./images/cash.png" style="vertical-align:text-bottom" /> 현금결제가능
+									</div>
+									<div cond="$document->getExtraValueHTML(3)== '카드'" style="margin-left:30px; float:right; padding-top:4px; padding-right:5px;  border-left:0px solid #ccc;  font-size:11px;"> 
+										<img src="./images/card.png" style="vertical-align:text-bottom" /> 카드결제가능
+									</div>
+									{@ $store_name=$document->variables[nick_name];}
+								</div>						       
+								<div class="store_list_bottom" style="width:750px; height:112px;">
+									<div class="store_bottom_thumbnail" style="width:106px; float:left; padding-left:4px; padding-top:4px;">
+									<!--@if($document->thumbnailExists($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnail_type))-->
+										<a href="{getUrl('document_srl',$document->document_srl,'listStyle',$listStyle, 'cpage','')}"><img src="{$document->getThumbnail($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnail_type)}" border="0" alt="" style="border:1px solid #bbb;padding:1px;"/></a>
+									<!--@else-->
+										<a href="{getUrl('document_srl',$document->document_srl,'listStyle',$listStyle, 'cpage','')}">
+										<img src="./images/default.png" border="0" alt="" class="thumb" width="100px" height="100px" style="margin-left:8px;" />
+										</a>
+									<!--@end-->
+									</div>
+									<div class="store_bottom_widget" style="width:575px; float:left; padding-left:7px; padding-top:6px;">
+										<img class="zbxe_widget_output" widget="content" skin="yamnyam_for_storelist" content_type="document" module_srls="55" list_type="image_title" tab_type="none" markup_type="table" list_count="6" cols_list_count="6" page_count="1" option_view="thumbnail,title" show_browser_title="N" show_comment_count="N" show_trackback_count="N" show_category="N" show_icon="N" order_target="list_order" order_type="desc" thumbnail_type="crop" store_name="{$store_name}" closed="{$closed}" />
+									</div>
+									<div class="store_bottom_more" style="float:left; float:left; margin-left:5px; padding-top:36px;">
+										<!--@if($closed=='N')-->
+											<a href="{getUrl('document_srl',$document->document_srl,'listStyle',$listStyle, 'cpage','')}">
+											<img src="./images/more.png" />
+											</a>
+										<!--@else-->
+											<img src="./images/more.png" />
+										<!--@end-->
+									</div>
+								</div>
+							</div>
+					<!--@end-->
+				<!--@end-->
+		    </div>
+		</form>
+	</div>
+	
+	<div class="boardBottom" style="width:750px;margin-bottom:25px;">
+
+    <!-- 페이지 네비게이션 -->
+        <div class="pagination a1" style="text-align:center;">
+            <a href="{getUrl('page','','document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="prevEnd">
+				{$lang->first_page}
+			</a> 
+            <!--@while($page_no = $page_navigation->getNextPage())-->
+                <!--@if($page == $page_no)-->
+                    <strong>{$page_no}</strong> 
+                <!--@else-->
+                    <a href="{getUrl('page',$page_no,'document_srl','','division',$division,'last_division',$last_division,'entry','')}">
+						{$page_no}
+					</a>
+                <!--@end-->
+            <!--@end-->
+            <a href="{getUrl('page',$page_navigation->last_page,'document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="nextEnd">
+				{$lang->last_page}
+			</a>
+        </div>
+	</div>
+
+<include target="_footer.html" />
+
+<script>
+
+/* 2011.04.05 단축키 기능 추가. */
+function scrollDown(position) {
+	var tempPostion = 171*position;
+	window.scrollTo(0, tempPostion);
+}
+
+$(function(){
+	$(document).ready(function() {
+		
+		var cellArray = new Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+						
+		//아래쪽 화살표
+		$(document).bind('keydown', 'down', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				if (cellArray.indexOf(1)>{$cell_no}-2) {
+				}
+				else {
+					var temp = cellArray.indexOf(1);
+					cellArray[temp]=0;
+					cellArray[temp+1]=1;
+					
+					var tt = cellArray.indexOf(1);
+					$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+					$('.arrow_cell_'+tt).css('border', '2px solid red');
+					scrollDown(tt);
+				}
+				
+			}
+			return false;
+		});
+		
+		//위쪽 화살표
+		$(document).bind('keydown', 'up', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				if (cellArray.indexOf(1)<1) {
+				}
+				else {
+					var temp = cellArray.indexOf(1);
+					cellArray[temp]=0;
+					cellArray[temp-1]=1;
+					
+					var tt = cellArray.indexOf(1);
+					$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+					$('.arrow_cell_'+tt).css('border', '2px solid red');
+					scrollDown(tt);
+				}
+			}
+			return false;
+		});
+				
+		//엔터키
+		$(document).bind('keydown', 'return', function(evt) {
+			if(cellArray.indexOf(1)!=-1 && $('#divLogin').css('display') != 'block') {
+				var temp = cellArray.indexOf(1);
+				
+				location.href=$(".arrow_cell_"+temp+"_address").val();
+			}
+			//return false;
+		});
+		
+	});
+});	
+</script>

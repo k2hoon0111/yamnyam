@@ -1,0 +1,14 @@
+<query id="getDocumentSrlFromName" action="select">
+    <tables>
+        <table name="documents" />
+    </tables>
+    <columns>
+        <column name="document_srl" />
+    </columns>
+    <conditions>
+        <condition operation="in" column="module_srl" var="module_srl" notnull="notnull" />
+        <condition operation="like" column="title" var="title" notnull="notnull" pipe="and"/>
+    </conditions>
+    <navigation>
+    </navigation>
+</query>

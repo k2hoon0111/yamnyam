@@ -1,0 +1,314 @@
+<script type="text/javascript" src="js/today_list.js"></script>
+
+<include target="_header.html" />
+
+{@
+	$type='학생식당';
+	$today=mktime();
+	$date = date('Y-m-d', $today);
+	$time = date('Hi', $today);
+
+	$today_str = date('Ypmd', $today);
+}
+
+<!--@if($time<'1000')-->
+	{@$selection=1;}
+<!--@else if($time<'1400')-->
+	{@$selection=2;}
+<!--@else if($time<'1900')-->
+	{@$selection=3;}
+<!--@end-->
+
+<!--@foreach($document_list as $no => $document)-->
+	<!--@if($category_list[$document->get('category_srl')]->title=='학생식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr1 = explode("&&",$text);
+			$arr1_morning = explode("||", $arr1[0]);
+			$arr1_lunch = explode("||", $arr1[1]);
+			$arr1_dinner = explode("||", $arr1[2]);						
+		}
+	<!--@else if($category_list[$document->get('category_srl')]->title=='공대식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr2 = explode("&&",$text);
+			$arr2_morning = explode("||", $arr2[0]);
+			$arr2_lunch = explode("||", $arr2[1]);
+			$arr2_dinner = explode("||", $arr2[2]);						
+		}
+	<!--@else if($category_list[$document->get('category_srl')]->title=='교직원식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr3 = explode("&&",$text);
+			$arr3_morning = explode("||", $arr3[0]);
+			$arr3_lunch = explode("||", $arr3[1]);
+			$arr3_dinner = explode("||", $arr3[2]);						
+		}
+	<!--@else if($category_list[$document->get('category_srl')]->title=='기숙사식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr4 = explode("&&",$text);
+			$arr4_morning = explode("||", $arr4[0]);
+			$arr4_lunch = explode("||", $arr4[1]);
+			$arr4_dinner = explode("||", $arr4[2]);						
+		}
+	<!--@end-->		
+<!--@end-->
+
+<div id="today_list_wrap2">
+	<div id="today_list_top"></div>
+	<div id="today_list_middle">
+		<div id="today_list_middle_left">
+			<div id="tab_list">
+				<div id="tab_list_item_1" class="tab_list_item_check">학생식당</div>
+				<div id="tab_list_item_2" class="tab_list_item">공대식당</div>
+				<div id="tab_list_item_3" class="tab_list_item">교직원식당</div>
+				<div id="tab_list_item_4" class="tab_list_item">기숙사식당</div>
+			</div>
+			<div id="about">
+			</div>			
+		</div>
+		<div id="today_list_middle_right">
+			<table cellspacing="0" class="today_list_table">
+				<!--@if($selection==1)-->
+				<tr class="today_list_table_selection">
+				<!--@else-->
+				<tr>
+				<!--@end-->
+					<th rowspan="3" class="today_td">
+						<div class="divDate">
+							<!--@for($i=0; $i<strlen($today_str); $i++)-->
+								<!--@if($i<7)-->
+									<img src="./images/small/{$today_str[$i]}.png" />
+								<!--@else-->
+									<img src="./images/big/{$today_str[$i]}.png" />
+								<!--@end-->
+								
+								<!--@if($i==6)-->
+									<br />
+								<!--@end-->
+							<!--@end-->
+						</div>
+					</td>
+					<td class="today_td_triangle" style="border-right:none; width:10px;">
+						<!--@if($selection==1)-->
+							<img src="./images/icon_triangle.png" style="margin-left:-4px;" />
+						<!--@end-->
+					</td>
+					<td class="today_td" style="border-right:none;">
+						<div class="today_list_type">조식1</div>
+						<div class="food_list_item_1">{strip_tags($arr1_morning[0], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_morning[0], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_morning[0], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_morning[0], '<br>')}</div>
+					</td>
+					<td class="today_td" style="border-right:none;">
+						<div class="today_list_type">조식2</div>
+						<div class="food_list_item_1">{strip_tags($arr1_morning[1], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_morning[1], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_morning[1], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_morning[1], '<br>')}</div>
+					</td>
+					<td class="today_td" style="border-right:none;">
+						<div class="today_list_type">조식3</div>
+						<div class="food_list_item_1">{strip_tags($arr1_morning[2], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_morning[2], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_morning[2], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_morning[2], '<br>')}</div>
+					</td>
+				</tr>
+				<!--@if($selection==2)-->
+				<tr class="today_list_table_selection">
+				<!--@else-->
+				<tr>
+				<!--@end-->
+					<td class="today_td_lunch_triangle" style="border-right:none; width:10px;">
+						<!--@if($selection==2)-->
+							<img src="./images/icon_triangle.png" style="margin-left:-4px;" />
+						<!--@end-->
+					</td>
+					<td class="today_td_lunch">
+						<div class="today_list_type">중식1</div>
+						<div class="food_list_item_1">{strip_tags($arr1_lunch[0], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_lunch[0], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_lunch[0], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_lunch[0], '<br>')}</div>
+					</td>
+					<td class="today_td_lunch">
+						<div class="today_list_type">중식2</div>
+						<div class="food_list_item_1">{strip_tags($arr1_lunch[1], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_lunch[1], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_lunch[1], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_lunch[1], '<br>')}</div>
+					</td>
+					<td class="today_td_lunch">
+						<div class="today_list_type">중식3</div>
+						<div class="food_list_item_1">{strip_tags($arr1_lunch[2], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_lunch[2], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_lunch[2], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_lunch[2], '<br>')}</div>
+					</td>
+				</tr>
+				<!--@if($selection==3)-->
+				<tr class="today_list_table_selection">
+				<!--@else-->
+				<tr>
+				<!--@end-->
+					<td class="tomorrow_td_triangle" style="border-right:none; width:10px;">
+						<!--@if($selection==3)-->
+							<img src="./images/icon_triangle.png" style="margin-left:-4px;" />
+						<!--@end-->
+					</td>
+					<td class="tomorrow_td" style="border-right:none;">
+						<div class="today_list_type">석식1</div>
+						<div class="food_list_item_1">{strip_tags($arr1_dinner[0], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_dinner[0], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_dinner[0], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_dinner[0], '<br>')}</div>
+					</td>
+					<td class="tomorrow_td" style="border-right:none;">
+						<div class="today_list_type">석식2</div>
+						<div class="food_list_item_1">{strip_tags($arr1_dinner[1], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_dinner[1], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_dinner[1], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_dinner[1], '<br>')}</div>
+					</td>
+					<td class="tomorrow_td" style="border-right:none;">
+						<div class="today_list_type">석식3</div>
+						<div class="food_list_item_1">{strip_tags($arr1_dinner[2], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_dinner[2], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_dinner[2], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_dinner[2], '<br>')}</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<div id="today_list_bottom"></div>
+</div>
+
+<!--@if($logged_info->is_admin=='Y')-->
+	<include cond="$oDocument->isExists()" target="_read.html" />
+	
+	<p cond="!$document_list && !$notice_list" class="no_ducument">{$lang->no_documents}</p>
+	<table width="100%" border="1" cellspacing="0" summary="List of Articles" id="board_list" class="board_list" cond="$document_list || $notice_list">
+		<thead>
+			<!-- LIST HEADER -->
+			<tr>
+				<th scope="col">분류</th>
+				<block loop="$list_config=>$key,$val">
+				<th scope="col" cond="$val->type=='no'">{$lang->no}</th>
+				<th scope="col" class="title" cond="$val->type=='title'">{$lang->title}</th>
+				<th scope="col" cond="$val->type=='nick_name'">{$lang->writer}</th>
+				<th scope="col" cond="$val->type=='user_id'">{$lang->user_id}</th>
+				<th scope="col" cond="$val->type=='user_name'">{$lang->user_name}</th>
+				<th scope="col" cond="$val->type=='regdate'"><a href="{getUrl('sort_index','regdate','order_type',$order_type)}">{$lang->date}</a></th>
+				<th scope="col" cond="$val->type=='last_update'"><a href="{getUrl('sort_index','last_update','order_type',$order_type)}">{$lang->last_update}</a></th>
+				<th scope="col" cond="$val->type=='last_post'"><a href="{getUrl('sort_index','last_update','order_type',$order_type)}">{$lang->last_post}</a></th>
+				<th scope="col" cond="$val->type=='readed_count'"><a href="{getUrl('sort_index','readed_count','order_type',$order_type)}">{$lang->readed_count}</a></th>
+				<th scope="col" cond="$val->type=='voted_count'"><a href="{getUrl('sort_index','voted_count','order_type',$order_type)}">{$lang->voted_count}</a></th>
+				</block>
+			</tr>
+			<!-- /LIST HEADER -->
+		</thead>
+		<tbody>
+			<!-- NOTICE -->
+			<tr class="notice" loop="$notice_list=>$no,$document">
+				<block loop="$list_config=>$key,$val">
+				<td class="notice" cond="$val->type=='no'">
+					<block cond="$document_srl==$document->document_srl">&raquo;</block>
+					<block cond="$document_srl!=$document->document_srl">{$lang->notice}</block>
+				</td>
+				<td class="title" cond="$val->type=='title'">
+					<a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}">
+						{$document->getTitle()}
+					</a>
+					<a cond="$document->getCommentCount()" href="{getUrl('document_srl', $document->document_srl)}#comment" class="replyNum" title="Replies">
+						[{$document->getCommentCount()}]
+					</a>
+					<a cond="$document->getTrackbackCount()" href="{getUrl('document_srl', $document->document_srl)}#trackback" class="trackbackNum" title="Trackbacks">
+						[{$document->getTrackbackCount()}]
+					</a>
+				</td>
+				<td class="author" cond="$val->type=='nick_name'">{$document->getNickName()}</td>
+				<td class="author" cond="$val->type=='user_id'">{$document->getUserID()}</td>
+				<td class="author" cond="$val->type=='user_name'">{$document->getUserName()}</td>
+				<td class="time" cond="$val->type=='regdate'">{$document->getRegdate('Y.m.d')}</td>
+				<td class="time" cond="$val->type=='last_update'">{zdate($document->get('last_update'),'Y.m.d')}</td>
+				<td class="lastReply" cond="$val->type=='last_post'">
+					<block cond="(int)($document->get('comment_count'))>0">
+						<a href="{$document->getPermanentUrl()}#comment" title="Last Reply">
+							{zdate($document->get('last_update'),'Y.m.d')}
+						</a>
+						<span cond="$document->get('last_updater')">
+							<sub>by</sub>
+							{htmlspecialchars($document->get('last_updater'))}
+						</span>
+					</block>
+					<block cond="(int)($document->get('comment_count'))==0">&nbsp;</block>
+				</td>
+				<td class="readNum" cond="$val->type=='readed_count'">{$document->get('readed_count')>0?$document->get('readed_count'):'0'}</td>
+				<td class="voteNum" cond="$val->type=='voted_count'">{$document->get('voted_count')!=0?$document->get('voted_count'):'0'}</td>
+				</block>
+			</tr>
+			<!-- /NOTICE -->
+			<!-- LIST -->
+			<tr loop="$document_list=>$no,$document">			
+				<td>{$category_list[$document->get('category_srl')]->title}</td>			
+				<block loop="$list_config=>$key,$val">
+				<td class="no" cond="$val->type=='no'">
+					<block cond="$document_srl==$document->document_srl">&raquo;</block>
+					<block cond="$document_srl!=$document->document_srl">{$no}</block>
+				</td>
+				<td class="title" cond="$val->type=='title'">
+					<a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}">
+						{$document->getTitle()}
+					</a>
+					<a cond="$document->getCommentCount()" href="{getUrl('document_srl', $document->document_srl)}#comment" class="replyNum" title="Replies">
+						[{$document->getCommentCount()}]
+					</a>
+					<a cond="$document->getTrackbackCount()" href="{getUrl('document_srl', $document->document_srl)}#trackback" class="trackbackNum" title="Trackbacks">
+						[{$document->getTrackbackCount()}]
+					</a>
+				</td>
+				<td class="author" cond="$val->type=='nick_name'">{$document->getNickName()}</td>
+				<td class="author" cond="$val->type=='user_id'">{$document->getUserID()}</td>
+				<td class="author" cond="$val->type=='user_name'">{$document->getUserName()}</td>
+				<td class="time" cond="$val->type=='regdate'">{$document->getRegdate('Y.m.d')}</td>
+				<td class="time" cond="$val->type=='last_update'">{zdate($document->get('last_update'),'Y.m.d')}</td>
+				<td class="lastReply" cond="$val->type=='last_post'">
+					<block cond="(int)($document->get('comment_count'))>0">
+						<a href="{$document->getPermanentUrl()}#comment" title="Last Reply">
+							{zdate($document->get('last_update'),'Y.m.d')}
+						</a>
+						<span cond="$document->get('last_updater')">
+							<sub>by</sub>
+							{htmlspecialchars($document->get('last_updater'))}
+						</span>
+					</block>
+					<block cond="(int)($document->get('comment_count'))==0">&nbsp;</block>
+				</td>
+				<td class="readNum" cond="$val->type=='readed_count'">{$document->get('readed_count')>0?$document->get('readed_count'):'0'}</td>
+				<td class="voteNum" cond="$val->type=='voted_count'">{$document->get('voted_count')!=0?$document->get('voted_count'):'0'}</td>
+				</block>
+			</tr>
+			<!-- /LIST -->
+		</tbody>
+	</table>
+	
+	<div class="list_footer">
+	    <div class="pagination" cond="$document_list || $notice_list">
+	        <a href="{getUrl('page','','document_srl','','division',$division,'last_division',$last_division)}" class="prevEnd">{$lang->first_page}</a> 
+	        <block loop="$page_no=$page_navigation->getNextPage()">
+				<strong cond="$page==$page_no">{$page_no}</strong> 
+				<a cond="$page!=$page_no" href="{getUrl('page',$page_no,'document_srl','','division',$division,'last_division',$last_division)}">{$page_no}</a>
+	        </block>
+	        <a href="{getUrl('page',$page_navigation->last_page,'document_srl','','division',$division,'last_division',$last_division)}" class="nextEnd">{$lang->last_page}</a>
+	    </div>
+		<div class="btnArea">
+			<a href="{getUrl('act','dispBoardWrite','document_srl','')}" class="btn">{$lang->cmd_write}</a>
+		</div>
+	</div>	
+<!--@end-->
+
+<include target="_footer.html" />

@@ -1,0 +1,155 @@
+<script type="text/javascript" src="js/today_list.js"></script>
+
+{@
+	$type='학생식당';
+	$today=mktime();
+	$date = date('Y-m-d', $today);
+	$time = date('Hi', $today);
+
+	$today_str = date('Y년 m월 d일', $today);
+}
+
+<!--@if($time<'1000')-->
+	{@$selection=1;}
+<!--@else if($time<'1400')-->
+	{@$selection=2;}
+<!--@else if($time<'1900')-->
+	{@$selection=3;}
+<!--@end-->
+
+<!--@foreach($document_list as $no => $document)-->
+	<!--@if($category_list[$document->get('category_srl')]->title=='학생식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr1 = explode("&&",$text);
+			$arr1_morning = explode("||", $arr1[0]);
+			$arr1_lunch = explode("||", $arr1[1]);
+			$arr1_dinner = explode("||", $arr1[2]);						
+		}
+	<!--@else if($category_list[$document->get('category_srl')]->title=='공대식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr2 = explode("&&",$text);
+			$arr2_morning = explode("||", $arr2[0]);
+			$arr2_lunch = explode("||", $arr2[1]);
+			$arr2_dinner = explode("||", $arr2[2]);						
+		}
+	<!--@else if($category_list[$document->get('category_srl')]->title=='교직원식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr3 = explode("&&",$text);
+			$arr3_morning = explode("||", $arr3[0]);
+			$arr3_lunch = explode("||", $arr3[1]);
+			$arr3_dinner = explode("||", $arr3[2]);						
+		}
+	<!--@else if($category_list[$document->get('category_srl')]->title=='기숙사식당' && $document->getTitle()==$date)-->
+		{@
+			$text = $document->getContent(false);
+			$arr4 = explode("&&",$text);
+			$arr4_morning = explode("||", $arr4[0]);
+			$arr4_lunch = explode("||", $arr4[1]);
+			$arr4_dinner = explode("||", $arr4[2]);						
+		}
+	<!--@end-->		
+<!--@end-->
+						
+<div id="today_list_wrap2" style="height:450px;">
+	<div id="today_list_middle">
+		<div id="today_list_middle_left">
+			<div id="tab_list">
+				<div id="tab_list_item_1" class="tab_list_item_check">학생식당</div>
+				<div id="tab_list_item_2" class="tab_list_item">공대식당</div>
+				<div id="tab_list_item_3" class="tab_list_item">교직원식당</div>
+				<div id="tab_list_item_4" class="tab_list_item">기숙사식당</div>
+			</div>
+		</div>
+		<div style="text-align:right; font-size:12px; font-weight:bold; padding:10px; padding-top:20px; margin-top:10px;">{$today_str}</div>
+		<div id="today_list_middle_right">
+		<center>
+			<table cellspacing="0" class="today_list_table" border=1 style="width:95%;">
+				<!--@if($selection==1)-->
+				<tr class="today_list_table_selection">
+				<!--@else-->
+				<tr>
+				<!--@end-->
+					<td class="today_td" style="width:30%;">
+						<div class="today_list_type">조식1</div>
+						<div class="food_list_item_1">{strip_tags($arr1_morning[0], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_morning[0], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_morning[0], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_morning[0], '<br>')}</div>
+					</td>
+					<td class="today_td" style="width:30%;">
+						<div class="today_list_type">조식2</div>
+						<div class="food_list_item_1">{strip_tags($arr1_morning[1], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_morning[1], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_morning[1], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_morning[1], '<br>')}</div>
+					</td>
+					<td class="today_td" style="width:30%;">
+						<div class="today_list_type">조식3</div>
+						<div class="food_list_item_1">{strip_tags($arr1_morning[2], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_morning[2], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_morning[2], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_morning[2], '<br>')}</div>
+					</td>
+				</tr>
+				<!--@if($selection==2)-->
+				<tr class="today_list_table_selection">
+				<!--@else-->
+				<tr>
+				<!--@end-->
+					<td class="today_td_lunch">
+						<div class="today_list_type">중식1</div>
+						<div class="food_list_item_1">{strip_tags($arr1_lunch[0], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_lunch[0], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_lunch[0], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_lunch[0], '<br>')}</div>
+					</td>
+					<td class="today_td_lunch">
+						<div class="today_list_type">중식2</div>
+						<div class="food_list_item_1">{strip_tags($arr1_lunch[1], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_lunch[1], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_lunch[1], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_lunch[1], '<br>')}</div>
+					</td>
+					<td class="today_td_lunch">
+						<div class="today_list_type">중식3</div>
+						<div class="food_list_item_1">{strip_tags($arr1_lunch[2], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_lunch[2], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_lunch[2], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_lunch[2], '<br>')}</div>
+					</td>
+				</tr>
+				<!--@if($selection==3)-->
+				<tr class="today_list_table_selection">
+				<!--@else-->
+				<tr>
+				<!--@end-->
+					<td class="tomorrow_td" style="">
+						<div class="today_list_type">석식1</div>
+						<div class="food_list_item_1">{strip_tags($arr1_dinner[0], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_dinner[0], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_dinner[0], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_dinner[0], '<br>')}</div>
+					</td>
+					<td class="tomorrow_td" style="">
+						<div class="today_list_type">석식2</div>
+						<div class="food_list_item_1">{strip_tags($arr1_dinner[1], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_dinner[1], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_dinner[1], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_dinner[1], '<br>')}</div>
+					</td>
+					<td class="tomorrow_td" style="">
+						<div class="today_list_type">석식3</div>
+						<div class="food_list_item_1">{strip_tags($arr1_dinner[2], '<br>')}</div>
+						<div class="food_list_item_2">{strip_tags($arr2_dinner[2], '<br>')}</div>
+						<div class="food_list_item_3">{strip_tags($arr3_dinner[2], '<br>')}</div>
+						<div class="food_list_item_4">{strip_tags($arr4_dinner[2], '<br>')}</div>
+					</td>
+				</tr>
+			</table>
+			</center>
+		</div>
+	</div>
+</div>

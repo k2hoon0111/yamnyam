@@ -1,0 +1,229 @@
+<!--%import("./css/category.css")-->
+
+<div>
+	<form action="{getUrl()}" method="get" onsubmit="return procFilter(this, search)" id="fo_search2">
+	<!--@if($vid)-->
+		<input type="hidden" name="vid" value="{$vid}" />
+	<!--@end-->
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="search_target" value="price" />
+	<div class="search_wrap">
+		<input type="text" name="search_keyword" value="" class="search_input"/>
+		<a href="#" onclick="$('#fo_search2').submit();return false;" class="btSearch"><span style="color:white">검 색</span></a>
+	</div>
+	<input type="hidden" name="sort_index" value="{$sort_index}" class="sort_index">
+	<input type="hidden" name="category" value="{$category}" class="food_category">
+	<input type="hidden" name="order_type" value="{$order_type}" class="order_type">
+	<table width="100%" cellpadding="3" cellspacing="0" style="border-bottom:1px solid #aaa;">
+	<tr>
+		<td style="padding-top:8px;"><img src="./images/btSelectFood.png" width="70" height="20">
+		<div style="position:absolute;margin-top:-24px;margin-left:-2px;opacity:0;">
+			<select id="selectItem">
+				<option>종류선택</option>
+				<!--@if($mid=="food_list")-->
+				<option value="0">전체</option>
+				<option value="57">한식</option>
+				<option value="59">중식</option>
+				<option value="61">일식</option>
+				<option value="63">양식</option>
+				<option value="191">분식</option>
+				<option value="507">치킨</option>
+				<option value="509">피자</option>
+				<option value="511">보쌈</option>
+				<option value="193">기타</option>
+				<!--@elseif($mid=="restaurant_list")-->
+				<option value="0">전체</option>
+				<option value="199">한식</option>
+				<option value="201">중식</option>
+				<option value="205">일식</option>
+				<option value="203">양식</option>
+				<option value="207">분식</option>
+				<option value="2921">치킨</option>
+				<option value="2923">피자</option>
+				<option value="2927">보쌈</option>
+				<option value="2925">기타</option>
+				<!--@endif-->
+			</select>
+		</div>
+		</td>
+		<td class="alignItem" align="right">
+			<!--@if($category == 57||$category == 199)-->한식</td><td>
+				<img src="images/button_category_1.png" width="24" height="20">
+			<!--@elseif($category == 59||$category == 201)-->중식</td><td>
+				<img src="images/button_category_2.png" width="24" height="20">
+			<!--@elseif($category == 61||$category == 205)-->일식</td><td>
+				<img src="images/button_category_3.png" width="24" height="20">
+			<!--@elseif($category == 63||$category == 203)-->양식</td><td>
+				<img src="images/button_category_4.png" width="24" height="20">
+			<!--@elseif($category == 191||$category == 207)-->분식</td><td>
+				<img src="images/button_category_5.png" width="24" height="20">
+			<!--@elseif($category == 507||$category == 2921)-->치킨</td><td>
+				<img src="images/button_category_6.png" width="24" height="20">
+			<!--@elseif($category == 509||$category == 2923)-->피자</td><td>
+				<img src="images/button_category_7.png" width="24" height="20">
+			<!--@elseif($category == 511||$category == 2927)-->보쌈</td><td>
+				<img src="images/button_category_8.png" width="24" height="20">
+			<!--@elseif($category == 193||$category == 2925)-->기타</td><td>
+				<img src="images/button_category_9.png" width="24" height="20">
+			<!--@else-->전체</td><td>
+				<img src="images/button_category_0.png" width="24" height="20">
+			<!--@endif-->			
+		</td>
+		<td align="right" style="border-left:1px solid #aaa;">
+			<!--@if($sort_index == "preferance")-->
+			<img src="images/tap_2.png" width="24" height="20">
+			<!--@elseif($sort_index == "abc")-->
+			<img src="images/tap_3.png" width="24" height="20">
+			<!--@elseif($sort_index == "price")-->
+			<img src="images/tap_4.png" width="24" height="20">
+			<!--@else-->
+			<img src="images/tap_1.png" width="15" height="18"> 
+			<!--@endif-->
+		</td>
+		<td class="alignItem">
+			<!--@if($order_type == "asc")-->
+			{@$order_type_text="△";}
+			<!--@elseif($order_type == "desc")-->
+			{@$order_type_text="▽";}
+			<!--@endif-->
+			<!--@if($sort_index == "preferance")-->
+			선호도순{$order_type_text}
+			<!--@elseif($sort_index == "abc")-->
+			가나다순{$order_type_text}
+			<!--@elseif($sort_index == "price")-->
+			가격순{$order_type_text}
+			<!--@else-->
+			무작위
+			<!--@endif-->
+		</td>
+		<td style="padding-top:8px;" align="right"><img src="./images/btSelectAlign.png" width="70" height="20">
+		<div style="position:absolute;margin-top:-27px;margin-left:3px;opacity:0;">
+			<select id="selectItem2">
+				<option>정렬방식</option>
+				<option value="0">무작위</option>
+				<option value="1">가격순▽</option>
+				<option value="2">가격순△</option>
+				<option value="3">선호도순▽</option>
+				<option value="4">선호도순△</option>
+				<option value="5">가나다순▽</option>
+				<option value="6">가나다순△</option>
+			</select>
+		</div>
+		</td>
+	</tr>
+	</table>
+	</form>
+</div>
+
+
+<!--
+<div id="search_left">
+			<input type="hidden" name="category" value="{$category}" class="food_category">
+			<div class="dock" id="dock">
+				<div class="dock-container">
+					<div style="float:left; width:50px; height:50px;">
+						<a class="dock-item">
+						<img src="images/button_category_0<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="getElementsByName('category')[0].value='';$('#fo_search2').submit();return false;" id="category_0"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@foreach($category_list as $val)-->
+						<!--@if($val->depth == 0)-->
+							<!--@if($val->title=="한식")-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_1<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='중식')-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_2<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='일식')-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_3<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}" />
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='양식')-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_4<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+								
+							<!--@elseif($val->title=='분식')-->
+								<div style="float:left; width:50px; height:50px;clear:left;">
+									<a class="dock-item">
+									<img src="images/button_category_5<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='치킨')-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_6<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='피자')-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_7<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='보쌈')-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_8<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='기타/주류')-->
+								<div style="float:left; width:50px; height:50px;">
+									<a class="dock-item">
+									<img src="images/button_category_10<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});$('#fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@end-->
+						<!--@end-->
+					<!--@end-->
+
+					<!--//Sort이미지-->
+					<div style="position:absolute; margin-left:230px;">
+						<a href="{getUrl()}" id="order_type_1"><!--@if($sort_index == "")--><img src="./{$tap_1}" class="tapped"/><!--@else--><img src="./{$tap_1}"><!--@endif--></a>
+						<a href="{getUrl('sort_index','preferance','order_type',$order_type1)}" id="order_type_2"><!--@if($sort_index == "preferance")--><img src="./{$tap_2}" class="tapped"/><!--@else--><img src="./{$tap_2}"><!--@endif--></a>
+						<a href="{getUrl('sort_index','abc','order_type',$order_type2)}" id="order_type_3"><!--@if($sort_index == "abc")--><img src="./{$tap_3}" class="tapped"/><!--@else--><img src="./{$tap_3}"><!--@endif--></a>
+						<a href="{getUrl('sort_index','price','order_type',$order_type3)}" id="order_type_4"><!--@if($sort_index == "price")--><img src="./{$tap_4}" class="tapped"/><!--@else--><img src="./{$tap_4}"><!--@endif--></a>
+					</div>
+					
+				</div>
+			</div>
+			</div>
+-->
+<script type="text/javascript">
+$('#selectItem').change(function(){
+	$("#selectItem option:selected").each(function () {
+		$('.food_category').val($(this).val());
+		$('#fo_search2').submit();
+		return false;
+    });
+});
+$('#selectItem2').change(function(){
+	$("#selectItem2 option:selected").each(function () {
+		var sortIndex;
+		var orderType;
+		switch($(this).val()){
+			case '0': sortIndex="";orderType="";break;
+			case '1': sortIndex="price";orderType="desc";break;
+			case '2': sortIndex="price";orderType="asc";break;
+			case '3': sortIndex="preferance";orderType="desc";break;
+			case '4': sortIndex="preferance";orderType="asc";break;
+			case '5': sortIndex="abc";orderType="desc";break;
+			case '6': sortIndex="abc";orderType="asc";break;
+		}
+		$('.sort_index').val(sortIndex);
+		$('.order_type').val(orderType);
+		$('#fo_search2').submit();
+		return false;
+    });
+});
+</script>

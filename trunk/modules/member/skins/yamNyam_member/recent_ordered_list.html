@@ -1,0 +1,249 @@
+<!--#include("./common_header.html")-->
+
+<!--@if($month < 10)-->
+	{@
+		$month2 = "0".$month;
+	}
+<!--@endif-->
+
+{@
+	// $count 는 총 데이터 갯수
+	// $extra_var[게시물순서][0~12번까지 extra_var 순서대로 들어가있음]
+
+	// $count_product[n] : n번째 게시물의 상품수
+	// $product[n][m] : n번째 게시물의 m번째 상품정보
+	$storeName = $logged_info->nick_name; // 나중에 값만 유저아이디로 바꾸면 해당 유저(상점)의 합계만 다 더해서 챠트로 뿌림
+	
+	
+    $oDB = &DB::getInstance();
+    $str = date('Y').$month2."00000000";
+    $str2 = date('Y').$month2."40000000";
+    
+	    $result = $oDB->_query("SELECT b.value,b.var_idx,regdate,title,a.document_srl FROM yman_document_extra_vars as b INNER JOIN yman_documents as a on b.document_srl=a.document_srl where b.document_srl in (SELECT a.document_srl FROM yman_document_extra_vars as b INNER JOIN yman_documents as a on b.document_srl=a.document_srl where b.module_srl=76 and b.var_idx=1 and (regdate > $str and regdate < $str2) and b.value like '%|$storeName|%') order by regdate desc;");
+
+    $output = $oDB->_fetch($result);
+	$count = count($output)/12;
+	$i=0;
+	$j=0;
+}
+
+	<script type="text/ecmascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+
+<script type="text/javascript">
+//	var map;
+
+	(function($){
+	    $(function(){
+			$(document).ready(function() {
+/*				var latlng = new google.maps.LatLng(37.29355, 126.974208);
+				var myOptions = {
+					zoom: 14,
+					center: latlng,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				};
+				map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+				
+				var polyOptions = {
+					strokeColor: '#000000',
+					strokeOpacity: 1.0,
+					strokeWeight: 3
+				}
+				poly = new google.maps.Polyline(polyOptions);
+				poly.setMap(map);
+				
+	*/
+			});
+	    });
+	})(jQuery);
+</script>
+
+	<div class="mypage_middle">
+		<div id="mypage_recent_top"></div>
+		<div class="map_body">
+			  <div id="map_canvas" style="width:660px; height:500px; margin:20px auto;"></div>
+		</div>
+		
+		<div>
+			<div class="tempLatitude" style="display:none;"></div>
+			<div class="tempLongitude" style="display:none;"></div>
+	
+			<iframe height="65px" width="660px" src="./modules/member/skins/yamNyam_member/notification.php?nickname={$logged_info->user_name}" frameborder=0></iframe>
+	
+			<table cellspacing="0" class="colTable" style="width:800px;margin:30px auto;">
+			<caption>Total : {number_format($total_count)}</caption>
+			<tbody>
+				<thead>
+					<tr>
+						<th class="title" style="width:50px"><div>번호</div></th>
+						<th class="title" style="width:100px"><div>날짜</div></th>
+						<th class="title" style="width:80px"><div>주문자</div></th>
+						<th class="title" style="width:250px"><div>주문내용</div></th>
+						<th class="title" style="width:270px"><div>주소</div></th>
+						<th class="title" style="width:50px"><div>배달상태</div></th>
+					</tr>
+				</thead>
+			
+			<!-- 쿼리 결과를 저장 -->
+				<!--@foreach($output as $key => $val)-->
+					{@
+						$extra_var[$i][$val->var_idx-1] = $val->value;
+						$extra_var[$i][regdate] = $val->regdate;
+						$extra_var[$i][title] = $val->title;
+						$extra_var[$i][document_srl] = $val->document_srl;
+						$query_str .= "'".$val->document_srl."',";
+						$j++;
+					   	if($j%12 == 0)$i++;
+
+					 }
+				<!--@endforeach-->
+					
+			<!-- 각 상품정보를 product에 저장 --> 
+				<!--@for($i=0; $i< $count; $i++)-->
+				{@
+					$product_data = $extra_var[$i][0];
+					$product_data2[$i] = explode("&&", $product_data);
+					$count_product[$i] = count($product_data2[$i])-1;
+					$delivery[$i] = explode("|", $extra_var[$i][2]);
+					$product[$i][push] = array();
+				}
+				
+					<!--@for($j=0; $j< $count_product[$i]; $j++)-->
+						{@ 
+							$product[$i][$j] = explode("|", $product_data2[$i][$j]);
+						}
+						
+						<!--@if($product[$i][$j][1] == $storeName)-->
+				
+							<!--@if($detail != "")-->
+								{@ $detail .= "<br>";}
+							<!--@endif-->
+								
+							{@
+								$product[$i][delivery] = $delivery[$i][$j];
+								$price += $product[$i][$j][4];
+								$detail .= $product[$i][$j][2]." ".$product[$i][$j][3]."개 ".$product[$i][$j][4]."원";
+								array_push($product[$i][push],$j);
+							}
+						<!--@endif-->
+					<!--@end-->
+					
+					<!--@if($delivery[$i][0] != 3)-->
+						<tr>
+						<td style="vertical-align: middle;">{$count-$i}</td>
+						<td style="vertical-align: middle;">{substr($extra_var[$i][regdate],0,4).'-'.substr($extra_var[$i][regdate],4,2).'-'.substr($extra_var[$i][regdate],6,2)}</td>
+						<td style="vertical-align: middle;">
+							{@
+								$title_arr = explode('님의',$extra_var[$i][title]);
+							}
+							{$title_arr[0]}
+						</td>
+						<td style="vertical-align: middle;">
+							{@ 
+								$sum_price_int = 0;
+								$store_charge_type_str = "";
+							}
+							<!--@foreach($product[$i] as $val)-->
+								<!--@if($val[1] == $storeName)-->
+									- {$val[2]}&nbsp{$val[3]}개&nbsp{$val[4]}원
+										<!--@if($val[6]=='cash')-->
+											{@$store_charge_type_str="현금결제";}
+										<!--@else if($val[6]=='card')-->
+											{@$store_charge_type_str="카드결제";}
+										<!--@end-->
+										{@
+											$sum_price_int += $val[4];
+										}
+									<br />
+								<!--@end-->
+							<!--@end-->
+							=> 총 : {$sum_price_int}원 {$store_charge_type_str}
+						</td>
+						<td style="vertical-align: middle;">{$extra_var[$i][12]}</td>
+						<td style="vertical-align: middle;">
+						<center>
+							<deliver cond="$delivery[$i][0] == 1">배달준비</deliver>
+							<deliver cond="$delivery[$i][0] == 2">배달중</deliver>
+							<deliver cond="$delivery[$i][0] == 3">배달완료</deliver>
+							<deliver cond="$delivery[$i][0] == 4">배달취소</deliver>
+					
+							<a href={$request_uri}?mid=today_menu_list&act=dispMemberRecentOrderedList&month={$month}&delivery_modify=1&document_srl={$extra_var[$i][document_srl]}&delivery_from={$product[$i][push][0]}&delivery_to={$product[$i][push][count($product[$i][push])-1]}>[변경]</a>
+						</td>
+						</tr>
+						
+						<script type="text/javascript">
+							(function($){
+								$(function(){
+									$('.tempLatitude').append({$extra_var[$i][10]});
+									$('.tempLatitude').append('|');
+								  	$('.tempLongitude').append({$extra_var[$i][11]});
+									$('.tempLongitude').append('|');
+								});
+							})(jQuery);
+						</script>
+					<!--@end-->
+				<!--@end-->
+			</tbody>
+			</table>
+			
+		<script>
+			(function($){
+			    $(function(){
+						var latlng = new google.maps.LatLng(37.29355, 126.974208);
+						var myOptions = {
+							zoom: 14,
+							center: latlng,
+							mapTypeId: google.maps.MapTypeId.ROADMAP,
+							scrollwheel: false
+						};
+						map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+						
+						var polyOptions = {
+							strokeColor: '#000000',
+							strokeOpacity: 1.0,
+							strokeWeight: 3
+						}
+						poly = new google.maps.Polyline(polyOptions);
+						poly.setMap(map);
+
+						var latitudes = $('.tempLatitude').html();
+						var longitudes = $('.tempLongitude').html();
+						
+						var latitudes_array = latitudes.split('|');
+						var longitudes_array = longitudes.split('|');
+						
+						var count = latitudes_array.length;
+			
+						for (var i=0; i<count-1; i++) {
+							var temp_latlng = new google.maps.LatLng(latitudes_array[i], longitudes_array[i]);
+							if(latitudes_array[i] == "" || longitudes_array[i] == "" )
+								continue;
+							draw_circle = new google.maps.Circle({
+								center: temp_latlng,
+								radius: 30,
+								strokeColor: "#FF0000",
+								strokeOpacity: 0.8,
+								strokeWeight: 1,
+								fillColor: "#FF0000",
+								fillOpacity: 0.35,
+								map: map
+							});
+							
+							var path = poly.getPath();
+
+							path.push(temp_latlng);
+						}
+			    });
+			})(jQuery);
+		</script>
+	</div>
+
+	<center>
+		<!--@for($i=1;$i<=date('n');$i++)-->
+			<a href={$request_uri}?mid=food_list&act=dispMemberRecentOrderedList&month={$i}>{$i}월</a> 
+		<!--@end-->
+	</center>
+</div>
+
+<div class="mypage_bottom"></div>
+
+<!--#include("./common_footer.html")-->

@@ -1,0 +1,111 @@
+<!--%import("./js/food.js")-->
+<!--%import("./css/food.css")-->
+
+<!--// 확장변수 정렬을 위한 코드추가 -->
+
+<!--@if($sort_index)-->
+	{@	
+		$noticeTF = false;
+		if($module_info->except_notice == 'Y') $noticeTF = true;
+		$args->module_srl = $module_info->module_srl;
+		$args->list_count = $total_count;
+		$args->category_srl = $category;
+		$oDocumentModel = &getModel('document');
+		$output = $oDocumentModel->getDocumentList($args, $noticeTF);
+		$document_list = $output->data;
+		if(!$order_type && $sort_index == "abc") $order_type="asc";
+		if(!$order_type) $order_type="desc";
+		
+	}
+	<!--@foreach($document_list as $no => $document)-->
+		<!--// 11.3.29 - 병웅 -->
+		<!--// 선호도순 출력을 위한코드 -->
+		<!--// 확장변수의 선호도 대신 별점값을 이용하여 정렬합니다. -->
+		<!--@if($sort_index=="preferance")-->
+		{@ $extra_sortkey[$no] = $document->getExtraEidValue("vote_point")/$document->get('voted_count');}
+		<!--@elseif($sort_index=="abc")-->
+		{@ $extra_sortkey[$no] = $document->getTitleText(5);}
+		<!--@else-->
+		{@ $extra_sortkey[$no] = $document->getExtraEidValue($sort_index);}
+		<!--@endif-->
+		{@$extra_sortkey2[$no] = $no;}
+	<!--@end-->
+	{@
+		array_multisort($extra_sortkey, $extra_sortkey2, $document_list);
+		if($order_type == 'desc') $document_list = array_reverse($document_list);
+	}
+	
+	<!--@if($document_srl)-->
+		<!--@foreach($document_list as $document)-->
+			{@$extra_doc_srl[] = $document->document_srl;}
+		<!--@end-->
+		{@$page = ((int) (array_search($document_srl, $extra_doc_srl) / $module_info->list_count)) + 1;
+		}
+	<!--@end-->
+	{@$document_list = array_slice($document_list, $module_info->list_count * ($page-1), $module_info->list_count, true);
+	}
+<!--@end-->
+
+<div data-role="none" class="divFoodWrap">	
+		<!--@foreach($document_list as $no => $document)-->
+		<div class="divCell">
+			<div class="divCellClickZone">
+				<div class="thumb">
+					<!--@if($document->thumbnailExists($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnail_type))-->
+					<img src="{$document->getThumbnail(100, 75, 'crop')}" width="75" height="56" style="border:1px solid #ccc"/>
+					<!--@else-->
+					<img src="/~yamnyam/modules/board/skins/yamnyam_foodlist/images/blank.gif" width="70" height="56"/>
+					<!--@end-->
+				</div>
+				<div class="subjects">
+					<h4 style="margin-bottom:5px;">{$document->getTitle(26)}</h4>
+					<p style="font-size:10px;">{$document->getNickName()}</p>
+					<p style="font-size:15px;font-weight:bold;">{number_format($document->getExtraValue(1))}원</p>
+				</div>
+				<div class="food_content" style="display:none;">
+					{$document->getContent(false)}
+				</div>
+			</div>
+			<div class="divCellAddCart" onClick="javascript:toCart('{$document->document_srl}','{$document->getNickName()}','{$document->getTitle(14)}','{$document->getExtraValue(1)}',1,'{$document->getThumbnail(150, 112, 'crop')}');">
+				<img src="./images/tocart.png" width="52" height="32">
+			</div>
+		</div>
+		<!--@end-->
+</div>
+
+
+<script type="text/javascript">
+// 리스트 터치시 오버랩효과
+
+	$(".divCellClickZone").click(function(){
+		if($(this).find(".food_content").css("display") == "none") {
+			$(this).find(".subjects").animate({
+			    opacity: 0.0}, 300,function(){
+					$(this).css("display","none");
+					$(this).parent().find(".food_content").css("display","block");
+					$(this).parent().find(".food_content").animate({
+				    opacity: 1.0}, 300);
+		    });
+	    } else {
+		    $(this).find(".food_content").animate({
+			    opacity: 0.0}, 300,function(){
+					$(this).css("display","none");
+					$(this).parent().find(".subjects").css("display","block");
+					$(this).parent().find(".subjects").animate({
+				    opacity: 1.0}, 300);
+		    });
+	    }
+	});
+</script>
+
+
+<div class="pn">
+	<!--@if($page != 1)-->
+	<a href="{getUrl('page',$page-1,'document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="prev">{$lang->cmd_prev}</a> 
+	<!--@endif-->
+	<strong>{$page} / {$page_navigation->last_page}</strong>
+	<!--@if($page != $page_navigation->last_page)-->
+	<a href="{getUrl('page',$page+1,'document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="next">{$lang->cmd_next}</a>
+	<!--@endif-->
+</div>
+

@@ -1,0 +1,1151 @@
+<include target="_header.html" />
+
+<!-- 수량 변경을 위한 스크립트 -->
+<!-- 수량 변경을 위한 스크립트 -->
+<script type="text/javascript">
+// <![CDATA[
+
+
+var data = new Array();
+var sumPrice = new Object();
+var minimumPrice = new Object();
+var payment = new Object();
+var restaurant_email = new Object();
+
+	function dispPopLayer(option) {
+		//$("#dialog_1").dialog('open');
+		$("#dialog_2").dialog('open');
+	}
+
+$(document).ready(
+	function()
+	{
+	
+			//다이얼로그 오프너
+		if(getMyCookie("dialog_1")!="Y") {
+			$("#dialog_1").dialog({
+				autoOpen:false,
+				resizable:false,
+				draggable:false,
+				width:320,
+				height:460
+			});
+		}
+
+		if(getMyCookie("dialog_2")!="Y") {
+			$("#dialog_2").dialog({
+				autoOpen:false,
+				resizable:false,
+				draggable:false,
+				width:320,
+				height:480
+			});
+		}
+		
+		
+		var winH = $(window).height();
+		var winW = $(window).width();
+		
+		$("#dialog_1").dialog( "option", "position", [winW/2-300/2-180, winH/2-400/2]);
+		$("#dialog_2").dialog( "option", "position", [winW/2-320/2, winH/2-480/2]);
+		
+		$("#dialog_1_link").click(function() {
+			alert('1');
+		});
+		
+		$("#dialog_2_link").click(function() {
+			location.href="http://skku.yamnyam.com/notice/7916";
+		});
+		
+		$("#dialog_1_close").click(function() {
+			if ( $("#dialog_1_check_box").is(':checked') ) {
+				setCookie( 'dialog_1', "Y", 1);
+			}
+
+			$("#dialog_1").dialog("close");
+		});
+		
+		$("#dialog_2_close").click(function() {
+			$("#dialog_2").dialog("close");
+		});
+		
+		$("#dialog_2_close_bottom").click(function() {
+			if ( $("#dialog_2_check_box").is(':checked') ) {
+				setCookie( 'dialog_2', "Y", 1);
+			}
+
+			$("#dialog_2").dialog("close");
+		});
+
+		//dialog_2_close_bottom
+
+		
+		$(".ui-dialog-titlebar").remove();
+
+	
+		$('#dock').Fisheye(
+			{
+				maxWidth: 9,
+				items: 'a',
+				itemsText: 'span',
+				container: '.dock-container',
+				itemWidth: 43,
+				proximity: 90,
+				halign : 'center'
+			}
+		)
+	}
+);
+
+
+/*수량 변경을 위한 함수*/
+function amount(num, i){
+	if($('#numBox_'+num).val() == 1 && i == 1) {
+		$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);
+	} else if($('#numBox_'+num).val() > 1 && $('#numBox_'+num).val() < 9) {
+		$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);	
+	} else if($('#numBox_'+num).val() >= 9 && i == -1) {
+		$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);
+	}
+}	
+
+
+$(document).ready(function() {
+	/*드래그용*/
+		$(".cell").dblclick(function() {
+			var id = $(this).children('#id').val();
+			var price = $(this).children('#price').val();
+			var calorie = $(this).children('#calorie').val();
+			var name = $(this).children('#name').val();
+			var phone= $(this).children('#phone').val();
+			var nickname= $(this).children('#nickname').val();
+			
+			toCart(id, price,calorie,name,phone,nickname);
+		});
+		
+		// 화살표 위치는 더블클릭 이벤트 제거
+		$('.divArrow').dblclick(function(e) {
+			e.preventDefault();
+			return false;
+		});
+
+		
+		// 마우스오버시 테두리색이 바뀜!
+		$(".cell").mouseover(function() {
+				$(this).css("border","2px #ccc solid");
+		});
+		$(".cell").mouseout(function() {
+				$(this).css("border","2px white solid");
+		});
+		
+		$( ".cell" ).draggable({
+			start: function() {
+				var id = $(this).children('#id').val();
+				var price = $(this).children('#price').val();
+				var calorie = $(this).children('#calorie').val();
+				var name = $(this).children('#name').val();
+				var phone= $(this).children('#phone').val();
+				var nickname= $(this).children('#nickname').val();
+				
+				copyVar(id, price, calorie, name, phone, nickname);
+
+				var temp_top = $('#divCart').css("margin-top");
+				temp_top = parseInt(temp_top.substring(0, temp_top.length-2));
+				$('#divCart').css("margin-top",temp_top-1);
+				$('#divCart').css("margin-right","7px");
+				$('#divCart').css("border","2px #cc5555 solid");
+				
+				$('#droptheitem').css("visibility","visible");
+			},
+			helper: function() {
+				return $(this).clone();	
+			},
+			stop: function() {
+				$('#divCart').css("border","1px solid #b8b8b8");
+				$('#divCart').css("margin-right","8px");
+
+				var temp_top = $('#divCart').css("margin-top");
+				temp_top = parseInt(temp_top.substring(0, temp_top.length-2));
+				$('#divCart').css("margin-top",temp_top+1);
+				
+				$('#droptheitem').css("visibility","hidden");
+			}
+		});
+
+
+});
+
+/*가격대 검색을 위한 slider UI*/
+$(document).ready(function() {
+
+	var search_min = '{$search_min}';
+	var search_max = '{$search_max}';	
+
+	if(	search_min != '' ) {
+		$( "#slider-range" ).slider({
+			range: true,
+			min: 0,
+			max: 30000,
+			step: 1000,
+			values: [ search_min, search_max ],
+			slide: function( event, ui ) {
+				$( "#sliderPrice1" ).empty();
+				$( "#sliderPrice1" ).append(ui.values[ 0 ]);
+				$( "#sliderPrice2" ).empty();
+				$( "#sliderPrice2" ).append(ui.values[ 1 ]);
+				$(".search_min").attr({value:ui.values[ 0 ]});
+				$(".search_max").attr({value:ui.values[ 1 ]});
+			}
+		});
+	
+		$( "#sliderPrice1" ).empty();
+		$( "#sliderPrice1" ).append(search_min);
+		$( "#sliderPrice2" ).empty();
+		$( "#sliderPrice2" ).append(search_max);
+		$(".search_min").attr({value:search_min});
+		$(".search_max").attr({value:search_max});
+	} else {
+		$( "#slider-range" ).slider({
+			range: true,
+			min: 0,
+			max: 30000,
+			step: 1000,
+			values: [ 0, 30000 ],
+			slide: function( event, ui ) {
+				$( "#sliderPrice1" ).empty();
+				$( "#sliderPrice1" ).append(ui.values[ 0 ]);
+				$( "#sliderPrice2" ).empty();
+				$( "#sliderPrice2" ).append(ui.values[ 1 ]);
+				
+				$(".search_min").attr({value:ui.values[ 0 ]});
+				$(".search_max").attr({value:ui.values[ 1 ]});
+			}
+		});
+	
+		$( "#sliderPrice1" ).empty();
+		$( "#sliderPrice1" ).append($( "#slider-range" ).slider( "values", 0 ));
+		$( "#sliderPrice2" ).empty();
+		$( "#sliderPrice2" ).append($( "#slider-range" ).slider( "values", 1 ));		
+		$(".search_min").attr({value:$( "#slider-range" ).slider( "values", 0 )});
+		$(".search_max").attr({value:$( "#slider-range" ).slider( "values", 1 )});
+	}
+});
+
+
+// ]]>
+</script>
+
+<!--// 확장변수 정렬을 위한 코드추가 -->
+
+<!--@if($sort_index)-->
+	{@	
+		$noticeTF = false;
+		if($module_info->except_notice == 'Y') $noticeTF = true;
+		$args->module_srl = $module_info->module_srl;
+		$args->list_count = $total_count;
+		$args->category_srl = $category;
+		$oDocumentModel = &getModel('document');
+		$output = $oDocumentModel->getDocumentList($args, $noticeTF);
+		$document_list = $output->data;
+		if(!$order_type && $sort_index == "abc") $order_type="asc";
+		if(!$order_type) $order_type="desc";
+		
+	}
+	<!--@foreach($document_list as $no => $document)-->
+		<!--// 11.3.29 - 병웅 -->
+		<!--// 선호도순 출력을 위한코드 -->
+		<!--// 확장변수의 선호도 대신 별점값을 이용하여 정렬합니다. -->
+		<!--@if($sort_index=="preferance")-->
+		{@ $extra_sortkey[$no] = $document->getExtraEidValue("vote_point")/$document->get('voted_count');}
+		<!--@elseif($sort_index=="abc")-->
+		{@ $extra_sortkey[$no] = $document->getTitleText(5);}
+		<!--@else-->
+		{@ $extra_sortkey[$no] = $document->getExtraEidValue($sort_index);}
+		<!--@endif-->
+		{@$extra_sortkey2[$no] = $no;}
+	<!--@end-->
+	{@array_multisort($extra_sortkey, $extra_sortkey2, $document_list);
+		if($order_type == 'desc') $document_list = array_reverse($document_list);
+	}
+	<!--@if($document_srl)-->
+		<!--@foreach($document_list as $document)-->
+			{@$extra_doc_srl[] = $document->document_srl;
+			}
+		<!--@end-->
+		{@$page = ((int) (array_search($document_srl, $extra_doc_srl) / $module_info->list_count)) + 1;
+		}
+	<!--@end-->
+	{@$document_list = array_slice($document_list, $module_info->list_count * ($page-1), $module_info->list_count, true);
+	}
+<!--@end-->
+
+<!--
+<p cond="!$document_list && !$notice_list" class="no_ducument">{$lang->no_documents}</p>
+-->
+
+
+
+<script type="text/javascript">
+// <![CDATA[
+function selectCategory(category){
+	$(".food_category").attr({value:category});
+}
+// ]]> 
+</script>
+
+			<!--@if($logged_info->is_admin=='Y')-->
+				<!--<a onclick="dispPopLayer(1)">관리자만뜹니다. 놀라지마요.</a>-->
+			<!--@end-->
+
+<div id="dialog_1" class="dialog">
+	<div id="dialog_1_close"></div>
+	<div id="dialog_1_link"></div>
+</div>
+<div id="dialog_2" class="dialog">
+	<div id="dialog_2_close"></div>
+	<div id="dialog_2_link"></div>
+	<div id="dialog_2_check"><input type="checkbox" id="dialog_2_check_box" /> 오늘 하루 이 창을 열지 않습니다.</div>
+	<div id="dialog_2_close_bottom"></div>
+</div>
+
+
+<include cond="$oDocument->isExists()" target="_read.html" />
+
+
+<!-- // 게시판 시작 -->
+<div id="divFoodList">
+	<div id="divShortcut" class="ynyShortcut">
+		<div id="scCategory">
+			<div style="position:relative;">
+				<div class="keyboardShortCut autosize" style="position:absolute; left:0px; top:20px;">Shift+1</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:43px; top:20px;">Shift+2</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:86px; top:20px;">Shift+3</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:129px; top:20px;">Shift+4</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:172px; top:20px;">Shift+5</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:216px; top:20px;">Shift+6</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:258px; top:20px;">Shift+7</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:301px; top:20px;">Shift+8</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:344px; top:20px;">Shift+9</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:387px; top:20px;">Shift+0</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:80px; top:85px;">Shift+F</div>
+			</div>
+		</div>
+		<div id="scSorting">
+			<div style="position:relative;">
+				<div class="keyboardShortCut autosize" style="position:absolute; left:249px; top:10px;">Shift+Q</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:319px; top:10px;">Shift+W</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:392px; top:10px;">Shift+E</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:469px; top:10px;">Shift+R</div>
+			</div>
+		</div>
+		<div id="scFoodList">
+			<div style="position:relative;">
+				<div class="keyboardShortCut autosize" style="position:absolute; left:-5px; top:120px;">left</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:85px; top:-5px;">up</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:175px; top:120px;">right</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:85px; top:245px;">down</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:20px; top:210px;">Shift+Up</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:20px; top:235px;">Shift+Down</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:130px; top:235px;">Ctrl+Enter</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:70px; top:120px;">Shift+Del</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:70px; top:170px;">SpaceBar</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:30px; top:80px;">Home</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:130px; top:80px;">End</div>
+			</div>
+		</div>
+	
+	</div>
+	<!--// 카테고리 표시 -->
+	<div id="divCategory">
+		<form action="{getUrl()}" method="get" onsubmit="return procFilter(this, search)" id="fo_search2">
+		<!--@if($vid)-->
+			<input type="hidden" name="vid" value="{$vid}" />
+		<!--@end-->
+		<input type="hidden" name="mid" value="{$mid}" />
+		<input type="hidden" name="search_target" value="price" />
+		<input type="hidden" class="search_min" name="search_min" value="" />
+		<input type="hidden" class="search_max" name="search_max" value="" />
+
+		<div id="search_left">
+			<input type="hidden" name="category" value="{$category}" class="food_category">
+			<div class="dock" id="dock">
+				<div class="dock-container">
+					<div style="margin-left:-35px; width:43px; height:43px;">
+						<a class="dock-item">
+						<img src="images/button_category_0<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="getElementsByName('category')[0].value='';xGetElementById('fo_search2').submit();return false;" id="category_0"/>
+						<span></span></a>&nbsp
+					</div>
+					<!--@foreach($category_list as $val)-->
+						<!--@if($val->depth == 0)-->
+							<!--@if($val->title=="한식")-->
+								<div style="margin-left:8px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_1<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='중식')-->
+								<div style="margin-left:51px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_2<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='일식')-->
+								<div style="margin-left:90px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_3<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}" />
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='양식')-->
+								<div style="margin-left:140px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_4<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='분식')-->
+								<div style="margin-left:180px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_5<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='치킨')-->
+								<div style="margin-left:220px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_6<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='피자')-->
+								<div style="margin-left:260px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_7<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='보쌈')-->
+								<div style="margin-left:300px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_8<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@elseif($val->title=='기타/주류')-->
+								<div style="margin-left:340px; width:43px; height:43px;">
+									<a class="dock-item">
+									<img src="images/button_category_10<!--@if($category != $val->category_srl)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+									<span></span></a>&nbsp
+								</div>
+							<!--@end-->
+						<!--@end-->
+					<!--@end-->
+				</div>
+			</div>
+
+			<div id="dummySpace">
+				<div id="divCategory_57" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==57)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_59" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==59)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_61" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==61)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_63" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==63)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_191" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==191)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_507" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==507)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_509" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==509)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_511" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==511)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+				<div id="divCategory_513" class="divFoodCategory_window">
+					<div class="Header">
+					</div>
+					<div class="Body">
+						<!--@foreach($category_list as $val)-->
+							<!--@if($val->depth==1 && $val->parent_srl==513)-->
+								{str_repeat("&nbsp;&nbsp;",$val->depth)}
+								<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+								<br/>
+							<!--@endif-->
+						<!--@end-->
+					</div>
+				</div>
+					<div id="divCategory_193" class="divFoodCategory_window">
+						<div class="Header">
+						</div>
+						<div class="Body">
+							<!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==193)-->
+									{str_repeat("&nbsp;&nbsp;",$val->depth)}
+									<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+									<br/>
+								<!--@endif-->
+							<!--@end-->
+						</div>
+					</div>
+				</div>
+				<div class="search_wrap">
+					<div class="search_text">
+						<input type="text" name="search_keyword" value="" class="inputTypeText search_keyword" size="40"/>
+						<!-- 						<input type="text" name="search_keyword" value="{htmlspecialchars($search_keyword)}" class="inputTypeText search_keyword" size="40"/>
+ -->
+					</div>
+					<div class="search_button" >
+						<a href="#" onclick="xGetElementById('fo_search2').submit();return false;" style="background-image:none;"><img src="./images/search.png" /></a>
+					</div>
+				</div>
+			</div>
+			
+			<div id="sliderSearch">
+				<p class="upper">
+					<a id="sliderPrice1"></a>&nbsp<img src="images/fromWon.png"/>
+				</p>
+				<div id="slider">
+					<div id="slider-range"></div>
+				</div>
+				<p class="lower">
+					<a id="sliderPrice2"></a>&nbsp<img src="images/toWon.png"/>
+				</p>
+			</div>
+		</form>
+	</div>
+
+
+	<div id="divSorting">
+		<!-- 11.3.29 -병웅
+			 sort를 위한 코드 -->
+			 {@$tap_1 = "images/tap_1.png";$tap_2 = "images/tap_2.png";$tap_3 = "images/tap_3.png";$tap_4 = "images/tap_4.png";}
+			<!--@if($sort_index == "")-->{@$tap_1 = "images/tapped_1.png"; }<!--@endif-->
+			<!--@if($sort_index == "preferance")-->{@$order_type1 = ($order_type == "desc")? "asc":"desc"; $tap_2 = "images/tapped_2.png"}
+			<!--@elseif($sort_index == "abc")-->{@$order_type2 = ($order_type == "desc")? "asc":"desc"; $tap_3 = "images/tapped_3.png" ;}
+			<!--@elseif($sort_index == "price")-->{@$order_type3 = ($order_type == "desc")? "asc":"desc"; $tap_4 = "images/tapped_4.png";}
+			<!--@endif-->
+		<div style="float:left; padding-left:234px;">
+			<a href="{getUrl()}" id="order_type_1"><!--@if($sort_index == "")--><img src="./{$tap_1}" class="tapped"/><!--@else--><img src="./{$tap_1}"><!--@endif--></a>
+			<a href="{getUrl('sort_index','preferance','order_type',$order_type1)}" id="order_type_2"><!--@if($sort_index == "preferance")--><img src="./{$tap_2}" class="tapped"/><!--@else--><img src="./{$tap_2}"><!--@endif--></a>
+			<a href="{getUrl('sort_index','abc','order_type',$order_type2)}" id="order_type_3"><!--@if($sort_index == "abc")--><img src="./{$tap_3}" class="tapped"/><!--@else--><img src="./{$tap_3}"><!--@endif--></a>
+			<a href="{getUrl('sort_index','price','order_type',$order_type3)}" id="order_type_4"><!--@if($sort_index == "price")--><img src="./{$tap_4}" class="tapped"/><!--@else--><img src="./{$tap_4}"><!--@endif--></a>
+		</div>
+		<div style="float:right;">
+			{@
+				$oDB = &DB::getInstance();
+				$result = $oDB->_query("SELECT distinct nick_name FROM yman_documents where module_srl = 141 order by nick_name;");
+				$output = $oDB->_fetch($result);
+				$nicknames = (array)$output;
+			}
+			<select onchange="doSelectShopName(this.value)">
+				<option value="", selected>상점별 음식 보기</option>			
+				<!--@for($i=0; $i<count($nicknames);$i++)-->
+					<option value="{$nicknames[$i]->nick_name}">{$nicknames[$i]->nick_name}</option>
+	<!--				{$nicknames[$i]->nick_name} -->
+				<!--@end-->
+			</select>
+
+		</div>
+	</div>
+
+{@$cell_no=0;}
+
+				{@ // 상점의 이름으로부터 상점이 설정한 최소값을 구한다.
+								
+				
+				$oDB = &DB::getInstance();
+
+				$result = $oDB->_query("SELECT nick_name FROM yman_documents where module_srl = 141;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$nickname = (array)$output;
+
+				}
+			<!--@for($i=0;$i<count($nickname);$i++)-->
+				{@
+				$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '".$nickname[$i]->nick_name."' and module_srl = 141 limit 1) and var_idx=1 limit 1;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$temp = (array)$output;
+				
+				// 상점의 이름으로부터 상점 결제방법을 구한다.
+				$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '".$nickname[$i]->nick_name."' and module_srl = 141 limit 1) and var_idx=3 limit 1;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$payment = (array)$output;
+			}
+			<!-- // 드래그 앤 드랍 -->
+			<script type="text/javascript">
+				// <![CDATA[
+				minimumPrice['{$nickname[$i]->nick_name}']={$temp[value]};
+				payment['{$nickname[$i]->nick_name}']="{$payment[value]}";
+				// ]]>
+			</script>
+		<!--@end-->
+			
+			
+			
+
+
+	<!--@foreach($document_list as $no => $document)-->
+		<!--@if(!$document->isNotice())-->
+			
+			<!--@if($cell_no%4==3)-->
+			<div id="div{$document->document_srl}" class="cell arrow_cell_{$cell_no}" style="margin-right:0;">
+			<!--@else-->
+			<div id="div{$document->document_srl}" class="cell arrow_cell_{$cell_no}">
+			<!--@end-->
+			{@$cell_no++}
+				<input type="hidden" id="id" value="{$document->document_srl}">
+				<input type="hidden" id="price" value="{$document->getExtraValue(1)}">
+				<!--@if(!is_int($document->getExtraValue(4)))-->
+					<input type="hidden" id="calorie" value="0">
+				<!--@else-->
+					<input type="hidden" id="calorie" value="{$document->getExtraValue(4)}">				
+				<!--@end-->
+				
+				<input type="hidden" id="name" value="{$document->getTitle($module_info->subject_cut_size)}">
+				<input type="hidden" id="phone" value="{$document->getExtraValue(3)}">
+				<input type="hidden" id="nickname" value="{$document->getNickName()}">
+				<input type="hidden" id="select_opt" value="{$document->getExtraValue(9)}">
+
+				<div style="height:20px; float:left;">
+<!--	2011/04/06 cell 별점 표시 제거. 김누리
+					{@ $width=70*(float)($document->getExtraValue(8)/$document->get('voted_count'))*0.1;}
+					<div id="small_star_on" style="width:{$width}px"></div>
+					<div id="small_star_off"></div>
+-->
+				</div>
+				
+				<!--@if($document->thumbnailExists($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnail_type))-->
+					<div style="border:0px solid #cfcfcf; width:162px; height:132px; margin:0 auto; float:left; margin-top:20px; margin-left:4px;">
+						<div style="background: url({$document->getThumbnail(154, 124, 'crop')}); width:154px; height:124px; margin:0 auto; margin-top:8px;border:0px solid #fff;">
+							<div class="calorie">
+								<!--@if($document->getExtraValue(4))-->
+									{$document->getExtraValue(4)}kcal
+								<!--@endif-->
+								<div class="item_label_wrap">
+									<!--@if(ereg('hot', $document->getExtraValue(7)))-->
+										<div class="item_label_1"></div>
+									<!--@end-->
+									<!--@if(ereg('new', $document->getExtraValue(7)))-->
+										<div class="item_label_2"></div>
+									<!--@end-->
+								</div>
+							</div>
+							<div class="social_text">
+								<!--@if($document->getExtraValue(11) && $document->getExtraValue(12))-->
+								{@
+									$social_date = $document->getExtraValue(11);
+									$social_month = $social_date[4].$social_date[5];
+									$social_day = $social_date[6].$social_date[7];
+								}
+								<div><b>{$social_month}월 {$social_day}일</b><a>까지</a></div>
+								<div style="float:right;"><b>{$document->getExtraValue(12)}명</b><a>이면</a></div>
+								<!--@end-->
+							</div>
+							<div class="price_small">{$document->getImagePriceSmall()}</div>
+							<div class="price">{$document->getImagePrice()}</div>
+						</div>
+					</div>
+				<!--@else-->
+					<div style="border:0px solid #cfcfcf; width:162px; height:132px; margin:0 auto; float:left; margin-top:20px; margin-left:4px;">
+						<div style="background: url('./modules/board/skins/yamnyam_foodlist/images/blank.gif'); width:154px; height:124px; margin:0 auto; margin-top:8px;border:0px solid #fff;">
+							<div class="calorie">
+								<!--@if($document->getExtraValue(4))-->
+									{$document->getExtraValue(4)}kcal
+								<!--@endif-->
+								<div class="item_label_wrap">
+									<!--@if(ereg('hot', $document->getExtraValue(7)))-->
+										<div class="item_label_1"></div>
+									<!--@end-->
+									<!--@if(ereg('new', $document->getExtraValue(7)))-->
+										<div class="item_label_2"></div>
+									<!--@end-->
+								</div>
+							</div>
+							<div class="social_text">
+								<!--@if($document->getExtraValue(11) && $document->getExtraValue(12))-->
+								{@
+									$social_date = $document->getExtraValue(11);
+									$social_month = $social_date[4].$social_date[5];
+									$social_day = $social_date[6].$social_date[7];
+								}
+								<div><b>{$social_month}월 {$social_day}일</b><a>까지</a></div>
+								<div style="float:right;"><b>{$document->getExtraValue(12)}명</b><a>이면</a></div>
+								<!--@end-->
+							</div>
+							<div class="price_small">{$document->getImagePriceSmall()}</div>
+							<div class="price">{$document->getImagePrice()}</div>
+						</div>
+					</div>
+				<!--@end-->
+				
+				<div class="title" style="padding-left:10px; padding-top:0px; float:left; width:160px;margin-top:7px;">
+					<a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}" title="{$document->getTitle()}"><div style="width:16px; float:left; margin-bottom:2px; margin-left:2px; margin-right:2px;"><img src="images/icon_nick.png" /></div><div>{$document->getTitle(18)}</div></a>
+				</div>
+				<div class="author" style="padding-left:10px; padding-top:2px; float:left; width:150px;">
+				<!--//11.3.29 -병웅 -->
+				<!--//상점이름으로 상점주소찾기!-->
+				{@
+					$store_srl = $document->getDocumentSrlFromName($document->getNickName());
+				}
+				
+				<div class="member_{$document->get('member_srl')}" style="padding-left:2px;"><div style="width:18px; float:left; margin-top:-2px;"><img src="images/icon_title.png" /></div><a href="{getUrl('document_srl',$store_srl,'')}"><div>{$document->getNickName()}</div></a></div>
+				</div>
+				<div style="margin-top:14px; float:left;">
+					<div style="padding-top:10px; width:20px; float:left; padding-left:1px;">
+						<input id="numBox_{$document->document_srl}" type=text value="1" maxlength="1" style="width:10px;" />
+					</div>
+					<div style="padding-top:13px; width:16px; float:left; line-height:10px;height:18px;" class="divArrow">
+						<a onClick="javascript:amount({$document->document_srl},1)"><img src="./images/up.png"/></a>
+						<a onClick="javascript:amount({$document->document_srl},-1)"><img src="./images/down.png"/></a>                    
+					</div>
+					<div style="width:125px; float:left; margin-left:-1px; margin-top:-2px;">
+						<a onClick="javascript:toCart({$document->document_srl},{$document->getExtraValue(1)},'{$document->getExtraValue(4)}','{$document->getTitle()}','{$document->getExtraValue(3)}','{$document->getNickName()}')">
+							<div class='selectButton'></div>
+						</a>
+					</div>
+				</div>
+			</div>
+		<!--@end-->
+	<!--@end-->
+</div>
+
+<!--@if($is_logged)-->
+<!-- 로그인시 해당 회원이 최근 주문한 게시물의 srl을 뽑아내야함 -->
+{@
+	$oDB = &DB::getInstance();
+	$result = $oDB->_query("SELECT document_srl FROM yman_documents where user_id='".$logged_info->user_id."' order by document_srl desc limit 1;");
+	
+	$output = $oDB->_fetch($result);
+	
+	$temp = (array)$output;
+	$recent_srl=$temp[document_srl];
+}
+<!--@endif-->
+
+<!-- 게시물이 없을땐 이것을 출력 -->
+<!--@if($cell_no==0)-->
+<div style="width:748px; height:500px; border:1px solid #e1e1e1; margin-top:-7px; margin-left:2px; margin-bottom:10px; text-align:center; font-size:20px; color:#e1e1e1;"><br/><br/><br/>현재 시간에 주문 가능한 음식이 없습니다.</div>
+<!--@end-->
+
+<div class="divFoodListFooter" style="width:750px;">
+	<div id="divShortcut" class="ynyShortcut">
+		<div id="scPagination">
+			<div style="position:relative;">
+				<div class="keyboardShortCut autosize" style="position:absolute; left:240px; top:0px;">PgUp</div>
+				<div class="keyboardShortCut autosize" style="position:absolute; left:480px; top:0px;">PgDn</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="pagination" cond="$document_list || $notice_list" style="text-align:center;">
+		<a href="{getUrl('page','','document_srl','','division',$division,'last_division',$last_division)}" class="prevEnd">{$lang->first_page}</a> 
+		<block loop="$page_no=$page_navigation->getNextPage()">
+			<strong cond="$page==$page_no">{$page_no}</strong> 
+			<a cond="$page!=$page_no" href="{getUrl('page',$page_no,'document_srl','','division',$division,'last_division',$last_division)}">{$page_no}</a>
+		</block>
+		<a href="{getUrl('page',$page_navigation->last_page,'document_srl','','division',$division,'last_division',$last_division)}" class="nextEnd">{$lang->last_page}</a>
+	</div>
+    <!--@foreach($logged_info->group_list as $key => $val)-->
+	    <!--@if($val=="상점회원" || $val=="관리그룹")-->
+	    	<div class="btnArea" style="text-align:right;">
+				<a href="{getUrl('act','dispBoardWrite','document_srl','')}" class="btn"><img src="./images/register.png" /></a>
+			</div>
+	    <!--@end-->
+	<!--@end-->
+</div>
+
+
+<include target="_footer.html" />
+
+<script>
+
+/* 2011.04.05 단축키 기능 추가. */
+function scrollDown(position) {
+	var tempPostion = 400+260*(parseInt(position/4));
+	window.scrollTo(0, tempPostion);
+}
+
+$(function(){
+	$(document).ready(function() {
+
+
+		//무작위순 정렬
+		$(document).bind('keydown', 'Shift+q', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				location.href="./";
+			}
+			return false;
+		});
+	
+		//선호도순 정렬
+		$(document).bind('keydown', 'Shift+w', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				location.href="http://skku.yamnyam.com/?mid=food_list&sort_index=preferance";
+			}
+			return false;
+		});
+	
+		//가나다순 정렬
+		$(document).bind('keydown', 'Shift+e', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				location.href="http://skku.yamnyam.com/?mid=food_list&sort_index=abc";
+			}
+			return false;
+		});
+	
+		//가격순 정렬
+		$(document).bind('keydown', 'Shift+r', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				location.href="http://skku.yamnyam.com/?mid=food_list&sort_index=price";
+			}
+			return false;
+		});
+	
+		//검색어 인풋 박스 포커스
+		$(document).bind('keydown', 'Shift+f', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				$('.search_keyword').focus();
+				
+			}
+			return false;
+		});
+		
+		//ESC - 검색어 인풋박스 포커스 잃어버리기
+		$(".search_keyword").bind('keydown', 'esc', function(evt) {
+			$(this).blur();
+			
+			//return false;
+		});
+		
+		//ESC - 검색어 인풋박스 포커스 잃어버리기
+		$(".ui-slider-handle").bind('keydown', 'esc', function(evt) {
+			$(this).blur();
+			
+			//return false;
+		});
+		
+		var cellArray = new Array(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0);
+		
+		//오른쪽 화살표
+		$(document).bind('keydown', 'right', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				if (cellArray.indexOf(1)=={$cell_no}-1) {
+				}
+				else if(cellArray.indexOf(1)==-1) {
+					$('.arrow_cell_0').css('border', '2px solid red');
+					cellArray[0]=1;
+					scrollDown(0);
+				}
+				else {
+					var temp = cellArray.indexOf(1);
+					cellArray[temp]=0;
+					cellArray[temp+1]=1;
+					
+					var tt = cellArray.indexOf(1);
+					$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+					$('.arrow_cell_'+tt).css('border', '2px solid red');
+					
+					scrollDown(tt);
+				}
+			}
+			return false;
+		});
+		
+		//왼쪽 화살표
+		$(document).bind('keydown', 'left', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				if (cellArray.indexOf(1)<=0) {
+				}
+				else {
+					var temp = cellArray.indexOf(1);
+					cellArray[temp]=0;
+					cellArray[temp-1]=1;
+					
+					var tt = cellArray.indexOf(1);
+					$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+					$('.arrow_cell_'+tt).css('border', '2px solid red');
+					scrollDown(tt);
+				}
+			}
+			return false;
+		});
+		
+		//아래쪽 화살표
+		$(document).bind('keydown', 'down', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				if (cellArray.indexOf(1)>{$cell_no}-5) {
+				}
+				else {
+					var temp = cellArray.indexOf(1);
+					cellArray[temp]=0;
+					cellArray[temp+4]=1;
+					
+					var tt = cellArray.indexOf(1);
+					$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+					$('.arrow_cell_'+tt).css('border', '2px solid red');
+					scrollDown(tt);
+				}
+				
+			}
+			return false;
+		});
+		
+		//위쪽 화살표
+		$(document).bind('keydown', 'up', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				if (cellArray.indexOf(1)<4) {
+				}
+				else {
+					var temp = cellArray.indexOf(1);
+					cellArray[temp]=0;
+					cellArray[temp-4]=1;
+					
+					var tt = cellArray.indexOf(1);
+					$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+					$('.arrow_cell_'+tt).css('border', '2px solid red');
+					scrollDown(tt);
+				}
+			}
+			return false;
+		});
+		
+		//홈 키 눌렀을 때
+		$(document).bind('keydown', 'home', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				var temp = cellArray.indexOf(1);
+				cellArray[temp]=0;
+				cellArray[0]=1;
+				
+				var tt = cellArray.indexOf(1);
+				$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+				$('.arrow_cell_'+tt).css('border', '2px solid red');
+				scrollDown(tt);
+			}
+			return false;
+		});
+		
+		//엔드 키 눌렀을 때
+		$(document).bind('keydown', 'end', function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				var temp = cellArray.indexOf(1);
+				cellArray[temp]=0;
+				cellArray[{$cell_no}-1]=1;
+				
+				var tt = cellArray.indexOf(1);
+				$('.arrow_cell_'+temp).css('border', '2px solid #fff');
+				$('.arrow_cell_'+tt).css('border', '2px solid red');
+				scrollDown(tt);
+			}
+			return false;
+		});
+		
+		//개별 항목 개수 증가
+		$(document).bind('keydown', 'shift+up', function(evt) {
+			if(cellArray.indexOf(1)!=-1 && $('#divLogin').css('display') != 'block') {
+			
+				var temp = cellArray.indexOf(1);
+	
+				var id = $('.arrow_cell_'+temp).children('#id').val();
+				
+				amount(id,1);
+				
+			}
+			return false;
+		});
+		
+		//개별 항목 개수 감소
+		$(document).bind('keydown', 'shift+down', function(evt) {
+			if(cellArray.indexOf(1)!=-1 && $('#divLogin').css('display') != 'block') {
+			
+				var temp = cellArray.indexOf(1);
+	
+				var id = $('.arrow_cell_'+temp).children('#id').val();
+				
+				amount(id,-1);
+				
+			}
+			return false;
+		});
+		
+		//개별 항목 삭제
+		$(document).bind('keydown', 'shift+del', function(evt) {
+			if(cellArray.indexOf(1)!=-1 && $('#divLogin').css('display') != 'block') {
+			
+				var temp = cellArray.indexOf(1);
+	
+				var id = $('.arrow_cell_'+temp).children('#id').val();
+				
+				delCart(id);
+				
+			}
+			return false;
+		});
+		
+		//엔터키
+		$(document).bind('keydown', 'return', function(evt) {
+			if(cellArray.indexOf(1)!=-1 && $('#divLogin').css('display') != 'block') {
+	
+				var temp = cellArray.indexOf(1);
+	
+				var id = $('.arrow_cell_'+temp).children('#id').val();
+				var price = $('.arrow_cell_'+temp).children('#price').val();
+				var calorie = $('.arrow_cell_'+temp).children('#calorie').val();
+				var name = $('.arrow_cell_'+temp).children('#name').val();
+				var phone= $('.arrow_cell_'+temp).children('#phone').val();
+				var nickname= $('.arrow_cell_'+temp).children('#nickname').val();
+				
+				toCart(id, price,calorie,name,phone,nickname);
+			}
+			//return false;
+		});
+		
+		//스페이스바
+		$(document).bind('keydown', 'space', function(evt) {
+			if(cellArray.indexOf(1)!=-1 && $('#divLogin').css('display') != 'block') {
+	
+				var temp = cellArray.indexOf(1);
+				var id = $('.arrow_cell_'+temp).children('#id').val();
+				
+				location.href="./?mid=food_list&document_srl=" + id;
+			}
+			//return false;
+		});
+		
+
+		
+
+
+	});
+});	
+</script>
+
+<script>
+
+//단축키
+$(function(){
+	$(document).ready(function() {
+	
+	//메뉴이동 - 전체
+	$(document).bind('keydown', 'Shift+1', function(evt) {
+	
+		if($('#divLogin').css('display') != 'block') {
+			document.getElementsByName('category')[0].value='';
+			xGetElementById('fo_search2').submit();
+			return false;
+		}
+	});
+
+{@
+	$category_count = 2;
+}
+<!--@foreach($category_list as $val)-->
+	<!--@if($val->depth == 0)-->
+			
+		//메뉴이동 - 한식부터 차례대로...
+		$(document).bind('keydown', 'Shift+'+{$category_count}, function(evt) {
+			if($('#divLogin').css('display') != 'block') {
+				selectCategory({$val->category_srl});
+				xGetElementById('fo_search2').submit();
+				return false;
+			}
+		});
+
+	{@
+		$category_count++;
+		$category_count=$category_count%10;
+	}
+
+	<!--@end-->
+<!--@end-->
+
+	});
+});	
+
+</script>

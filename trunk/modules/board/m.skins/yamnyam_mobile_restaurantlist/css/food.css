@@ -1,0 +1,8 @@
+.divFoodWrap{ overflow: hidden;}
+	.divCell{ border-bottom: 1px solid #aaa; height: 64px; padding-right:60px;padding-left: 100px; _width /**/:100%; margin-bottom: 1px;}
+	.divCell .thumb{ float: left; width: 80px; height: 100%-6px; margin-right:-100px;position: relative;left:-100px; padding: 3px;}
+	.divCell .subjects, .food_content{display: block;width: 100%; height:64px; font-size: 12px;float:left; overflow: hidden; margin-left: -10px; margin-top:-8px;}
+	.divCell .food_content{ opacity: 0; }
+	.divCell .divCellAddCart{ text-align: center; width: 50px; float:right; margin-left: -50px; left:50px; position: relative; padding:16px 0;}
+
+.divCell p{ color: #919191; padding: 0px; margin: 0px;}

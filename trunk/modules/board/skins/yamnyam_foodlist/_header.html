@@ -1,0 +1,8 @@
+<!--%import("css/default.css")-->
+<!--%import("js/default.js")-->
+
+<div id="divFoodListMain">
+	<div class="board_header" cond="$module_info->title || $module_info->comment">
+		<h2 cond="$module_info->title"><a href="{getUrl('','mid',$mid)}">{$module_info->title}</a></h2>
+		<p cond="$module_info->comment">{$module_info->comment}</p>
+	</div>

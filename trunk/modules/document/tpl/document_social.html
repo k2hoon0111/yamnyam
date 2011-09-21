@@ -1,0 +1,87 @@
+<!--%import("filter/edit_event_price.xml")-->
+<!--%import("filter/manage_checked_document.xml")-->
+
+
+<div style="border-bottom:2px solid #ccc; margin:10px 0px;"><img src="layouts/yamnyam_shop_layout/images/5-3.png" width="300" height="36"></div>
+
+<form id="fo_list" action="./" method="post" onsubmit="return procFilter(this, edit_event_price)">
+<input type="hidden" name="page" value="{$page}" />
+
+<!-- 紐⑸� -->
+<table cellspacing="0" class="rowTable clear">
+<caption>Total {number_format($total_count)}, Page {number_format($page)}/{number_format($total_page)}</caption>
+<thead>
+    <tr>
+        <th scope="col"><div>{$lang->no}</div></th>
+        <th scope="col" class="wide"><div>음식명</div></th>
+        <th scope="col"><div>음식점명</div></th>
+        <th scope="col"><div>기존가격</div></th>
+        <th scope="col"><div>이벤트가격</div></th>
+        <th scope="col"><div>목표기간</div></th>
+        <th scope="col"><div>목표인원수</div></th>
+        <th scope="col"><div>수정</div></th>
+        <th scope="col"><div>삭제</div></th>
+    </tr>
+</thead>
+<tbody>
+	{@$d_srl="";}
+    <!--@foreach($document_list as $no => $oDocument)-->
+    <tr>
+        <td class="number center">{$no}</td>
+        <td class="left subject">
+            <!--@if($oDocument->get('module_srl') != 0)-->
+                <!--@if($oDocument->get('module_srl')==$oDocument->get('member_srl'))-->
+                    {$lang->cmd_save}
+                <!--@else-->
+                    <a href="{getUrl('','document_srl',$oDocument->document_srl)}" onclick="window.open(this.href);return false">{$oDocument->getTitle()}</a>
+                <!--@end-->
+            <!--@else-->
+                [{$lang->in_trash}] {$oDocument->getTitle()}
+            <!--@end-->
+
+            <!--@if($oDocument->getCommentCount())-->
+                [{$oDocument->getCommentCount()}]
+            <!--@end-->
+
+            <!--@if($oDocument->getTrackbackCount())-->
+                [{$oDocument->getTrackbackCount()}]
+            <!--@end-->
+        </td>
+        
+        <td class="number center">{$oDocument->getNickname()}</td>
+        <td class="center">{$oDocument->getExtraValue(10)}</td>
+       	<td class="center">{$oDocument->getExtraValue(1)}</td>
+       	<td class="center">{$oDocument->getExtraValue(11)}</td>
+       	<td class="center">
+       		{@
+       			$oDB = &DB::getInstance();
+			    $result = $oDB->_query("SELECT count(b.user_id) as cnt FROM yman_document_extra_vars as a, yman_documents as b where a.module_srl=76 and a.var_idx=1 and a.value like '%".$oDocument->document_srl."%' and b.document_srl = a.document_srl;");
+			    $output = $oDB->_fetch($result);
+       		}
+       		{$output->cnt}/{$oDocument->getExtraValue(12)} <a href="{getUrl('layout','shop','act','dispDocumentAdminSocialView','document_srl',$oDocument->document_srl)}" target="_blank">[대상보기]</a>
+       	</td>
+       	<td class="center"><a href="{getUrl('layout','shop','act','dispBoardWrite','document_srl',$oDocument->document_srl)}" target="_blank">[수정]</a></td>
+       	<td class="center"><a href="{getUrl('layout','shop','act','dispBoardDelete','document_srl',$oDocument->document_srl)}" target="_blank">[삭제]</a></td>
+    </tr>
+    <!--@end-->
+</tbody>
+</table>
+<!-- 紐⑤� ��� -->
+<div class="fr">
+	<a href="{getUrl('act','dispBoardWrite','layout','shop','mid','food_list')}" class="button black strong" target="_blank"><span>새 소셜상품 등록</span></a>
+</div>
+
+</form>
+
+<!-- ���吏��ㅻ�寃����-->
+<div class="pagination a1">
+    <a href="{getUrl('page','','module_srl',$module_srl)}" class="prevEnd">{$lang->first_page}</a> 
+    <!--@while($page_no = $page_navigation->getNextPage())-->
+        <!--@if($page == $page_no)-->
+            <strong>{$page_no}</strong> 
+        <!--@else-->
+            <a href="{getUrl('page',$page_no,'module_srl',$module_srl)}">{$page_no}</a> 
+        <!--@end-->
+    <!--@end-->
+    <a href="{getUrl('page',$page_navigation->last_page,'module_srl',$module_srl)}" class="nextEnd">{$lang->last_page}</a>
+</div>

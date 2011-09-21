@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+    <actions>
+        <action name="dispKrzip_popupIndex" type="view" standalone="true" index="true" />
+    </actions>
+</module>
