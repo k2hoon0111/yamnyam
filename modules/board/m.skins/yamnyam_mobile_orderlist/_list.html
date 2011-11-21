@@ -1,0 +1,69 @@
+<!--
+
+<div data-inline="true">
+	<form action="{getUrl()}" method="get">
+		<input type="hidden" name="vid" value="{$vid}" />
+		<input type="hidden" name="mid" value="{$mid}" />
+		<input type="hidden" name="category" value="{$category}" />
+		
+		<fieldset class="ui-grid-a">
+			<div class="ui-block-a" style="width:50%; margin-top:0.50em; float:left;">
+				<input type="search" name="search_keyword" value="{htmlspecialchars($search_keyword)}" accesskey="S" title="{$lang->cmd_search}" />
+			</div>
+			<div class="ui-block-b" style="width:35%; margin-top:-0.30em; float:right;">
+				<input type="submit" value="검색"></input>
+			</div>
+		</fieldset>
+	</form>
+</div>
+
+
+
+
+<div data-role="fieldcontain">
+	<select name="selectCategory" id="selectCategory">
+		<!--@foreach($category_list as $val)-->
+			<!--@if($val->depth == 0)-->
+		<option value="{$val->category_srl}">{$val->title}</option>
+			<!--@end-->
+		<!--@end-->
+	</select>
+</div>
+-->
+
+<div style="height:30px; background-color:white; font-size:14px; border-bottom:1px solid #666; margin-bottom:10px;">
+	음식리스트
+</div>
+						
+<div data-role="none">
+	<ul data-role="listview" data-split-theme="d">
+	
+		<!--@foreach($document_list as $no => $document)-->
+		<li>
+			<a href="{getUrl('document_srl', $document->document_srl)}" >
+				<!--@if($document->thumbnailExists($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnail_type))-->
+				<img src="{$document->getThumbnail(154, 124, 'crop')}" />
+				<!--@else-->
+				<img src="/modules/board/skins/yamnyam_foodlist/images/blank.gif" />
+				<!--@end-->
+				<h3>{$document->getTitle(30)}</h3>
+				<p>{number_format($document->getExtraValue(1))}원</p>
+				<p>{$document->getNickName()}</p>
+	
+			</a>
+		</li>
+		<!--@end-->
+	</ul>
+</div>
+
+
+<div class="pn">
+	<!--@if($page != 1)-->
+	<a href="{getUrl('page',$page-1,'document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="prev">{$lang->cmd_prev}</a> 
+	<!--@endif-->
+	<strong>{$page} / {$page_navigation->last_page}</strong>
+	<!--@if($page != $page_navigation->last_page)-->
+	<a href="{getUrl('page',$page+1,'document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="next">{$lang->cmd_next}</a>
+	<!--@endif-->
+</div>
+

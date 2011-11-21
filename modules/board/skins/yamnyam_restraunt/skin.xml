@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+    <title xml:lang="ko">yamNyam_restraunt</title>
+	<description xml:lang="ko">게시판 스킨 제작 실습을 위한 user_board 입니다.</description>
+    <version>1.0</version>
+    <date>2010-12-24</date>
+    <author email_address="user@user.com" link="http://user-define.com/">
+        <name xml:lang="ko">User Name</name>
+    </author>
+    <license>LGPL v2</license>
+    <extra_vars>
+        <var name="title" type="text">
+            <title xml:lang="ko">게시판 제목</title>
+			<description xml:lang="ko">작성하면 화면에 표시 됨</description>
+        </var>
+        <var name="comment" type="textarea">
+            <title xml:lang="ko">게시판 상세 설명</title>
+			<description xml:lang="ko">작성하면 화면에 표시 됨</description>
+        </var>
+    </extra_vars>
+</skin>
+

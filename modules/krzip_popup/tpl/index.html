@@ -1,0 +1,33 @@
+<!--%import("krzip_search.js")-->
+<div id="popHeader">
+    <h3 class="xeAdmin">우편번호 검색</h3>
+</div>
+
+<div id="popBody">
+
+    <table cellspacing="0" class="rowTable">
+    <tr>
+        <td>
+            <p>
+                찾고자하는 지역의 <b>"동 이름"</b>을 입력해주십시오.<br />
+                예 : 서울시 강남구 역삼동인 경우 "역삼동"을 입력해 주시면 됩니다.
+            </p>
+           <form id="fo_insert_member" onsubmit="return false;">
+                <div id="zone_address_list_{$column_name}" style="display:none">
+                    <select name="_tmp_address_list_{$column_name}" class="w300"></select>
+                    <a href="#" onclick="doSelectKrZip('{$column_name}'); return false;" class="button"><span>{$lang->cmd_select}</span></a>
+                    <a href="#" onclick="doHideKrZipList('{$column_name}'); return false;" class="button"><span>{$lang->cmd_cancel}</span></a>
+                </div>
+                <div id="zone_address_search_{$column_name}" style="display:inline;">
+                    <input type="text" name="_tmp_address_search_{$column_name}" id="tmp_address" class="inputTypeText w300" value="" onkeydown="if(event.keyCode==13) doSearchKrZip('{$column_name}');" />
+                    <a href="#" onclick="doSearchKrZip('{$column_name}'); return false;" class="button"><span>{$lang->cmd_search}</span></a><br />
+                </div>
+            </form>
+        </td>
+    </tr>
+    </table>
+</div>
+
+<script type="text/javascript">
+    xAddEventListener(window, 'load', function() { xGetElementById("tmp_address").focus(); });
+</script>

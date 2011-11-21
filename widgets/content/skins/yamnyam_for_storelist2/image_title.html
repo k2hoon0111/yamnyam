@@ -1,0 +1,127 @@
+
+{@$_idx=0}
+{@$thumbnail_idx=0}
+
+<!--@foreach($widget_info->content_items as $key => $item)-->
+		
+	{@ // 상점의 이름으로부터 상점이 설정한 최소값을 구한다.
+		$nickname = $item->getNickName();
+		$oDB = &DB::getInstance();
+		$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '$nickname' and module_srl = 141 limit 1) and var_idx=1 limit 1;");
+		
+		$output = $oDB->_fetch($result);
+		
+		$temp = (array)$output;
+	}
+<!--@if($widget_info->closed=="N")-->
+		<!-- // 드래그 앤 드랍 -->
+		<script type="text/javascript">
+		
+		var minimumPrice = new Object();
+	
+			minimumPrice['{$item->getNickName()}']={$temp[value]};
+			
+		var id = new Object();
+		var price = new Object();
+		var calorie = new Object();
+		var name = new Object();
+		var phone = new Object();
+		var nickname = new Object();
+		
+	
+		(function($){
+			$(function(){
+				$("#div_{$item->getDocumentSrl()}").draggable({
+					start: function() {
+						id = {$item->getDocumentSrl()};
+						price = {$item->getExtraEidValue('price')};
+						calorie = "{$item->getExtraEidValue('calorie')}";
+						name = "{$item->getTitle()}";
+						phone= "{$item->getExtraEidValue('cellphone')}";
+						nickname="{$item->getNickName()}";
+
+						var temp_top = $('#divCart').css("margin-top");
+						temp_top = parseInt(temp_top.substring(0, temp_top.length-2));
+						$('#divCart').css("margin-top",temp_top-1);
+						$('#divCart').css("margin-right","7px");
+						$('#divCart').css("border","2px #cc5555 solid");
+					},
+					helper: function() {
+						return $(this).clone();
+					},
+					stop: function() {
+						$('#divCart').css("border","1px solid #b8b8b8");
+						$('#divCart').css("margin-right","8px");
+						var temp_top = $('#divCart').css("margin-top");
+						temp_top = parseInt(temp_top.substring(0, temp_top.length-2));
+						$('#divCart').css("margin-top",temp_top+1);
+					}
+				});
+	
+				$("#div_{$item->getDocumentSrl()}").dblclick(function() {
+					id = {$item->getDocumentSrl()};
+					price = {$item->getExtraEidValue('price')};
+					calorie = "{$item->getExtraEidValue('calorie')}";
+					name = "{$item->getTitle()}";
+					phone= "{$item->getExtraEidValue('cellphone')}";
+					nickname="{$item->getNickName()}";
+					toCart(id, price,calorie,name,phone,nickname);
+				});
+			});
+		})(jQuery);
+
+		</script>
+<!--@end-->
+	<script type="text/javascript">
+		function amount(num, i){
+			if($('#numBox_'+num).val() == 1 && i == 1) {
+				$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);
+			} else if($('#numBox_'+num).val() > 1 && $('#numBox_'+num).val() < 9) {
+				$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);	
+			} else if($('#numBox_'+num).val() >= 9 && i == -1) {
+				$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);
+			}
+		}	
+
+	</script>
+		
+	<div id="div_{$item->getDocumentSrl()}" class="cell_big" >
+		<div style="background: url({$widget_info->content_items[$thumbnail_idx]->getThumbnail()}); margin-left:8px; float:left; width:154px; height:124px; margin-top:28px;">
+			<div style="font-size: 18px; padding:0 5px; height:44px; padding-top:14px">
+				{$item->getSocialInfo()}
+			</div>
+			<div style="padding: 12px 5px 0 0; height:20px;">{$item->getImagePriceSmall()}</div>
+			<div style="padding: 2px 5px 0 0; float:right; hegiht:30px;">{$item->getImagePrice()}</div>
+		</div>
+		<div class="title" style="margin:18px 10px; height:13px; vertical-align:top; float:left;">
+			<!--@if($widget_info->closed=="N")-->
+			<a href="{$item->getLink()}" title="{$item->getTitle()}">
+				<div style="width:12px; float:left;"><img src="img/icon_nick.png" /></div><div style="width:120px; float:left; margin-left:10px;">{$item->getTitle(14)}</div>
+			</a>
+			<!--@else-->
+				<div style="width:12px; float:left;"><img src="img/icon_nick.png" /></div><div style="width:120px; float:left; margin-left:10px;">{$item->getTitle(14)}</div>
+			<!--@end-->
+		</div>
+		<div style="margin-top:7px; float:left;">
+			<div style="padding-top:10px; width:20px; float:left; padding-left:1px;">
+				<input id="numBox_{$item->getDocumentSrl()}" type=text value="1" maxlength="1" style="width:10px;" />
+			</div>
+			<div style="padding-top:13px; width:16px; float:left; line-height:10px;height:18px;" class="divArrow">
+				<a onClick="javascript:amount({$item->getDocumentSrl()},1)"><img src="./img/up.png"/></a>
+				<br />
+				<a onClick="javascript:amount({$item->getDocumentSrl()},-1)"><img src="./img/down.png"/></a>                    
+			</div>
+			<div style="width:125px; float:left; margin-left:-1px;">
+				<a <!--@if($widget_info->closed=="N")-->onClick="javascript:toCart({$item->getDocumentSrl()},{$item->getExtraEidValue('price')},'{$item->getExtraEidValue('calorie')}','{$item->getTitle()}','{$item->getExtraEidValue('cellphone')}','{$item->getNickName()}')"<!--@endif-->>
+				<div id="button_select" ></div></a>
+			</div>
+		</div>
+		<input id="numBox_{$item->getDocumentSrl()}" type=hidden value="1" />
+	</div>			
+
+{@$_idx++}
+{@$thumbnail_idx++}
+<!--@end-->
+
+
+

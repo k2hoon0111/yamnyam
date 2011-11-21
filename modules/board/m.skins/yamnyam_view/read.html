@@ -1,0 +1,42 @@
+{@ Context::addJsFile("./common/js/jquery.js", true, '', -100000) }
+{@ Context::addJsFile("./common/js/js_app.js", true, '', -100000) }
+{@ Context::addJsFile("./common/js/common.js", true, '', -100000) }
+{@ Context::addJsFile("./common/js/xml_handler.js", true, '', -100000) }
+{@ Context::addJsFile("./common/js/xml_js_filter.js", true, '', -100000) }
+<!--%import("js/mboard.js")-->
+<!--%import("css/mboard.css")-->
+<div class="co">
+		<!--@if($oDocument->isSecret() && !$oDocument->isGranted())-->
+		<!--@else-->
+		<!--@if($oDocument->isExtraVarsExists())-->
+			{@ $_extra_vars = $oDocument->getExtraVars(); }
+			<!--@foreach($_extra_vars as $key => $val)-->
+				<!--@if($val->idx==6)-->
+				<div id="divCart">
+				{@print_r($val->value)}
+				</div>
+				<!--@endif-->
+			<!--@end-->
+		<!--@end-->
+		<!--@end-->
+</div>
+
+
+<script type="text/javascript">
+// <![CDATA[
+
+
+(function($){
+    $(function(){
+		$(document).ready(function() {
+			$('a').remove();
+		
+		});
+    });
+})(jQuery);
+
+
+
+
+// ]]>
+</script>

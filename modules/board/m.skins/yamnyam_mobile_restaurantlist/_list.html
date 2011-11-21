@@ -1,0 +1,121 @@
+<!--%import("./css/food.css")-->
+{@ // 상점의 이름으로부터 상점이 설정한 최소값을 구한다.
+								
+				
+				$oDB = &DB::getInstance();
+
+				$result = $oDB->_query("SELECT nick_name FROM yman_documents where module_srl = 141;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$nickname = (array)$output;
+
+				}
+			<!--@for($i=0;$i<count($nickname);$i++)-->
+				{@
+				$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '".$nickname[$i]->nick_name."' and module_srl = 141 limit 1) and var_idx=1 limit 1;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$temp = (array)$output;
+				
+				// 상점의 이름으로부터 상점 결제방법을 구한다.
+				$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '".$nickname[$i]->nick_name."' and module_srl = 141 limit 1) and var_idx=3 limit 1;");
+				
+				$output = $oDB->_fetch($result);
+				
+				$payment = (array)$output;
+			}
+		<!--@end-->
+
+
+<div data-role="none" class="divFoodWrap">	
+		<!--@foreach($document_list as $no => $document)-->
+			{@
+				$today=mktime();
+				$current_day = date('w', $today);
+				$current_time = date('G', $today);
+				
+				$temp_current = 0;
+				$current_time_str = 0;
+			}
+			<!--@for($temp_i=0; $temp_i<7; $temp_i++)-->
+				<!--@if($temp_i==$current_day)-->
+					<!--@for($temp_j=0; $temp_j<24; $temp_j++)-->
+						<!--@if ($temp_j==$current_time)-->
+							{@
+								$temp_current++;
+								$current_time_str = $temp_current;
+							}
+						<!--@else-->
+							{@
+								$temp_current++;
+							}
+						<!--@end-->
+					<!--@end-->
+				<!--@else-->
+					<!--@for($temp_j=0; $temp_j<24; $temp_j++)-->
+						{@
+							$temp_current++;
+						}
+					<!--@end-->
+				<!--@end-->
+			<!--@end-->
+
+			<!--@if(substr($document->getExtraValue(9) ,$current_time_str-1, 1))-->
+				{@$closed=0;}
+			<!--@else-->
+				{@$closed=1;}
+			<!--@end-->
+		<div class="divCell">
+			<div class="divCellClickZone">
+				<div class="thumb">
+					<!--@if($document->thumbnailExists($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnail_type))-->
+					<img src="{$document->getThumbnail(150, 112, 'crop')}" width="75" height="56" style="border:1px solid #ccc"/>
+					<!--@else-->
+					<img src="/~yamnyam/modules/board/skins/yamnyam_foodlist/images/blank.gif" width="70" height="56"/>
+					<!--@end-->
+				</div>
+				<div class="subjects">
+					<h4 style="margin-bottom:5px;">{$document->getTitle(30)}<span cond="$document->getExtraValueHTML(3)== '현금, 카드'">
+						<img src="./images/cash.png" width="10" height="10" style="vertical-align:text-bottom" />
+						<img src="./images/card.png" width="10" height="10" style="vertical-align:text-bottom" />
+					</span>
+					<span cond="$document->getExtraValueHTML(3)== '현금'"> 
+						<img src="./images/cash.png" width="10" height="10" style="vertical-align:text-bottom" />
+					</span>
+					<span cond="$document->getExtraValueHTML(3)== '카드'" 
+						<img src="./images/card.png" width="10" height="10" style="vertical-align:text-bottom" />
+					</span>
+</h4>
+					<p>최소배달금액 {number_format($document->getExtraValue(1))}원</p>
+					<span style="font-size:11px; font-weight:bold; color:#AAA;">영업시간</span>
+					{$document->getExtraValueHTML(6)}~{$document->getExtraValueHTML(7)}
+				</div>
+				<div class="food_content" style="display:none;">
+					<p>{$document->getContent(false)}</p>
+				</div>
+			</div>
+			<!--@if(!$closed)-->
+			<div class="divCellAddCart" onClick="javascript:location.href='{getUrl('document_srl', $document->document_srl)}';">
+				<img src="./images/btMenuView.png" width="52" height="32">
+			</div>
+			<!--@else-->
+			<div class="divCellAddCart" onClick="javascript:alert('현재 배달가능시간이 아닙니다.');">
+				배달종료
+			</div>
+			<!--@endif-->
+		</div>
+		<!--@end-->
+</div>
+
+<div class="pn">
+	<!--@if($page != 1)-->
+	<a href="{getUrl('page',$page-1,'document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="prev">{$lang->cmd_prev}</a> 
+	<!--@endif-->
+	<strong>{$page} / {$page_navigation->last_page}</strong>
+	<!--@if($page != $page_navigation->last_page)-->
+	<a href="{getUrl('page',$page+1,'document_srl','','division',$division,'last_division',$last_division,'entry','')}" class="next">{$lang->cmd_next}</a>
+	<!--@endif-->
+</div>
+

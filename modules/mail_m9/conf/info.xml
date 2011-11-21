@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module version="0.1" category="accessory">
+    <title xml:lang="ko">전체메일 발송</title>
+    <author email_address="mmx900@gmail.com" link="http://m9.pe.kr" date="2008. 3. 3">
+        <name xml:lang="ko">mmx900</name>
+        <description xml:lang="ko">
+            메일 수신 동의 사용자를 대상으로 전체 메일을 발송합니다. 메일 모듈이 나올때까지 임시로 씁니다.
+        </description>
+    </author>
+</module>

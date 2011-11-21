@@ -1,0 +1,351 @@
+<!--%import("../../tpl/js/signup_check.js")-->
+<!--%import("../../tpl/js/krzip_search.js")-->
+<!--%import("filter/signup.xml")-->
+
+<!--// datepicker javascript plugin load -->
+<!--%load_js_plugin("ui")-->
+<!--%load_js_plugin("ui.datepicker")-->
+
+<!--#include("./common_header.html")-->
+
+<div id="title_signup"></div>
+
+<div id="signup_body_3_top">
+</div>
+
+<div id="signup_body_3_middle">
+	<form id="fo_insert_member" action="./" method="get" onsubmit="return procFilter(this, signup)">
+	    <input type="hidden" name="accept_agreement" value="Y" id="accept_agree" />
+		<!--@if($branch == '0')-->
+			<input type="hidden" name="group_srl_list" value="238" class="inputTypeText" /> 
+		<!--@elseif($branch == '1')-->
+			<input type="hidden" name="group_srl_list" value="237" class="inputTypeText" /> 
+		<!--@elseif($branch == '2')-->
+			<input type="hidden" name="group_srl_list" value="1338" class="inputTypeText" /> 
+		<!--@elseif($branch == '3')-->
+			<input type="hidden" name="group_srl_list" value="239" class="inputTypeText" /> 
+		<!--@end-->
+	
+	    <table cellspacing="0" class="rowTable">
+	    <tr>
+	        <th style="border-top:2px solid #E5E5E5;"><div><img src="./img/icon_check.png"> {$lang->user_id} </div></th>
+	        <td class="wide" style="border-top:2px solid #E5E5E5;"><input type="text" name="user_id" value="" class="inputTypeText"/> <p>{$lang->about_user_id}</p> </td>
+	    </tr>
+	    <tr>
+	        <th><div><img src="./img/icon_check.png"> {$lang->password} </div></th>
+	        <td><input type="password" name="password1" value="" class="inputTypeText"/><p>{$lang->about_password}</p></td>
+	    </tr>
+	    <tr>
+	        <th><div><img src="./img/icon_check.png"> {$lang->password2} </div></th>
+	        <td><input type="password" name="password2" value="" class="inputTypeText"/></td>
+	    </tr>
+	    <tr>
+	        <th><div><img src="./img/icon_check.png"> {$lang->user_name} </div></th>
+	        <td>
+	            <input type="text" name="user_name" value="" class="inputTypeText"/><p>{$lang->about_user_name}</p>
+	        </td>
+	    </tr>
+	<!--
+	    <tr>
+	        <th><div>{$lang->nick_name} <span class="require">*</span></div></th>
+	        <td>
+	            <input type="text" name="nick_name" value="" class="inputTypeText"/><p>{$lang->about_nick_name}</p>
+	        </td>
+	    </tr>
+	-->
+	    <tr>
+	        <th><div><img src="./img/icon_check.png">
+	        	<!--@if($branch == '3')-->
+	        	{$lang->email_address}
+	        	<!--@else-->
+	        	성균관대학교 이메일 인증
+	        	<!--@end-->
+	        </div></th>
+	        <td>
+	        
+			<!--@if($branch == '3')-->
+	            <input type="text" name="email_address" value="" class="0"/>
+			<!--@else-->
+	            <input type="text" name="email_address" value="" class="1"/>
+			<!--@end-->
+	
+	        
+				<!--@if($branch == '1' || $branch == '2')-->
+					<input type="hidden" class="checkbox" name="skkumember" value="Y" checked="checked" />
+					<p style ="color:red">{$lang->about_email_address2}</p>
+				<!--@end-->
+				<!--
+				<p style="color:red">{$lang->about_email_address3}</p>
+				<p>{$lang->about_email_address}</p>
+				-->
+			</td>
+	    </tr>
+		<!--@if(count($lang->find_account_question_items)>1)-->
+	    <tr>
+	        <th><div><img src="./img/icon_check.png"> {$lang->find_account_question} </div></th>
+	        <td>
+				<select name="find_account_question">
+				<!--@for($i=1,$c=count($lang->find_account_question_items);$i<$c;$i++)-->
+					<option value="{$i}">{$lang->find_account_question_items[$i]}</option>
+				<!--@end-->
+				</select>
+	            <br />
+				<input type="text" name="find_account_answer" value="" class="inputTypeText w300"/>
+	        </td>
+	    </tr>
+		<!--@end-->
+	<!--    
+	    <tr>
+	        <th><div>{$lang->birthday}</div></th>
+	        <td>
+	            <input type="hidden" name="birthday" id="date_birthday" value="" />
+	            <input type="text" value="" readonly="readonly" class="inputDate inputTypeText" />
+				<span class="button"><input type="button" value="{$lang->cmd_delete}" class="dateRemover" /></span>
+				<p>{$lang->about_birthday}</p>
+	        </td>
+	    </tr>
+	-->
+	    <tr>
+	        <th><div><img src="./img/icon_check_blank.png"> {$lang->allow_mailing}</div></th>
+	        <td><input type="checkbox" class="checkbox" name="allow_mailing" value="Y" checked="checked" /> <p>{$lang->about_allow_mailing}</p></td>
+	    </tr>
+	    <!--@if($extend_form_list)-->
+			<!--@if($branch != '3')--><!--//음식점사업자가 아닌 회원가입시-->
+	        <!--@foreach($extend_form_list as $key => $val)--><!--@if($val->is_active=='Y')-->
+				<!--@if($val->column_name == 'opentime' || $val -> column_name == 'closetime'||$val->column_name=='notification')-->
+				<!--@else-->
+				<tr>
+					<th>
+						<!--@if($val->required=='Y')-->
+							<img src="./img/icon_check.png">
+						<!--@else-->
+							<img src="./img/icon_check_blank.png">
+						<!--@end-->
+						{htmlspecialchars($val->column_title)}
+					</th>
+				<td>
+					<!--// 일반 text -->
+					<!--@if($val->column_type == 'text')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" class="inputTypeText w400" />
+						<br/>
+						<!--@if($val->column_name == 'validationcode')-->
+							<p style="color:red">* 인증번호가 오지 않을 시 스팸문자함을 확인해주세요.</p>
+						<!--@end-->						
+					<!--// 홈페이지 주소 -->
+					<!--@elseif($val->column_type == 'homepage')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" class="inputTypeText w400" />
+	
+					<!--// Email 주소 -->
+					<!--@elseif($val->column_type == 'email_address')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" class="inputTypeText w400" />
+	
+					<!--// 전화번호 -->
+					<!--@elseif($val->column_type == 'tel')-->
+	
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[0])}" size="4" class="inputTypeText" />
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[1])}" size="4" class="inputTypeText" />
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[2])}" size="4" class="inputTypeText" />
+					<!--// textarea -->
+					<!--@elseif($val->column_type == 'textarea')-->
+						<textarea name="{$val->column_name}" class="inputTypeTextArea w400">{htmlspecialchars($val->value)}</textarea>
+	
+					<!--// 다중 선택 -->
+					<!--@elseif($val->column_type == 'checkbox')-->
+						<!--@if($val->default_value)-->
+							<ul class="checkbox">
+							<!--@foreach($val->default_value as $v)-->
+								<li><input type="checkbox" name="{$val->column_name}" value="{$v}" <!--@if(is_array($val->value)&&in_array($v, $val->value))-->checked="checked"<!--@end-->/>{$v}</li>
+							<!--@end-->
+							</ul>				
+						<!--@end-->
+	
+	
+					<!--@elseif($val->column_type == 'radio')-->
+						<!--@if($val->default_value)-->
+							<ul class="radio">
+							<!--@foreach($val->default_value as $v)-->
+								<li><input type="radio" name="{$val->column_name}" value="{$v}" <!--@if(is_array($val->value)&&in_array($v, $val->value))-->checked="checked"<!--@end-->/>{$v}</li>
+							<!--@end-->
+							</ul>
+						<!--@end-->
+	
+					<!--// 단일 선택 -->
+					<!--@elseif($val->column_type == 'select')-->
+						<select name="{$val->column_name}">
+						<!--@if($val->default_value)-->
+							<!--@foreach($val->default_value as $v)-->
+								<option value="{$v}" <!--@if($v == $val->value)-->selected="selected"<!--@end-->>{$v}</option>
+							<!--@end-->
+						<!--@end-->
+						</select>
+	
+					<!--// 한국 주소 검색 -->
+					<!--@elseif($val->column_type == 'kr_zip')-->
+                <div class="krZip">
+                    <div id="zone_address_search_{$val->column_name}">
+                        <input type="text" name="{$val->column_name}" class="inputTypeText w300" style="cursor:pointer;" value="" readonly="readonly" onclick="popopen('{getUrl('','module','krzip_popup','act','dispKrzip_popupIndex','column_name',$val->column_name)}','krzip_search'); return false;" />
+                        <a href="{getUrl('','module','krzip_popup','act','dispKrzip_popupIndex','column_name',$val->column_name)}" onclick="popopen(this.href,'krzip_search'); return false;" class="button"><span>{$lang->cmd_search}</span></a>
+                    </div>
+                     <div id="zone2_address_{$val->column_name}">
+                        <input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[1])}" class="inputTypeText w300" />
+                     </div>
+                </div>
+	
+					<!--// 일본 주소 검색 -->
+					<!--@elseif($val->column_type == 'jp_zip')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" />
+	
+					<!--// 날짜 입력 -->
+					<!--@elseif($val->column_type == 'date')-->
+						<input type="hidden" name="{$val->column_name}" id="date_{$val->column_name}" value="{$val->value}" />
+						<input type="text" class="inputDate inputTypeText" value="{zdate($val->value,'Y-m-d')}" readonly="readonly" />
+						<span class="button"><input type="button" value="{$lang->cmd_delete}" class="dateRemover" /></span>
+					<!--@end-->
+	
+					<p>{$val->description}</p>
+					</td>
+				</tr><!--@end-->
+				<!--@end--><!--@end-->
+			<!--@else--><!--//음식점사업자 회원가입시-->
+			<!--@foreach($extend_form_list as $key => $val)--><!--@if($val->is_active=='Y')-->
+			<!--@if($val->column_name=='notification')-->
+			<!--@else-->
+				<tr>
+					<th>
+						<!--@if($val->required=='Y')-->
+							<img src="./img/icon_check.png">
+						<!--@else-->
+							<img src="./img/icon_check_blank.png">
+						<!--@end-->
+						{htmlspecialchars($val->column_title)}
+					</th>
+				<td>
+					<!--// 일반 text -->
+					<!--@if($val->column_type == 'text')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" class="inputTypeText w400" />
+	
+					<!--// 홈페이지 주소 -->
+					<!--@elseif($val->column_type == 'homepage')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" class="inputTypeText w400" />
+	
+					<!--// Email 주소 -->
+					<!--@elseif($val->column_type == 'email_address')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" class="inputTypeText w400" />
+	
+					<!--// 전화번호 -->
+					<!--@elseif($val->column_type == 'tel')-->
+	
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[0])}" size="4" class="inputTypeText" />
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[1])}" size="4" class="inputTypeText" />
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[2])}" size="4" class="inputTypeText" />
+					<!--// textarea -->
+					<!--@elseif($val->column_type == 'textarea')-->
+						<textarea name="{$val->column_name}" class="inputTypeTextArea w400">{htmlspecialchars($val->value)}</textarea>
+	
+					<!--// 다중 선택 -->
+					<!--@elseif($val->column_type == 'checkbox')-->
+						<!--@if($val->default_value)-->
+							<ul class="checkbox">
+							<!--@foreach($val->default_value as $v)-->
+								<li><input type="checkbox" name="{$val->column_name}" value="{$v}" <!--@if(is_array($val->value)&&in_array($v, $val->value))-->checked="checked"<!--@end-->/>{$v}</li>
+							<!--@end-->
+							</ul>				
+						<!--@end-->
+	
+	
+					<!--@elseif($val->column_type == 'radio')-->
+						<!--@if($val->default_value)-->
+							<ul class="radio">
+							<!--@foreach($val->default_value as $v)-->
+								<li><input type="radio" name="{$val->column_name}" value="{$v}" <!--@if(is_array($val->value)&&in_array($v, $val->value))-->checked="checked"<!--@end-->/>{$v}</li>
+							<!--@end-->
+							</ul>
+						<!--@end-->
+	
+					<!--// 단일 선택 -->
+					<!--@elseif($val->column_type == 'select')-->
+						<select name="{$val->column_name}">
+						<!--@if($val->default_value)-->
+							<!--@foreach($val->default_value as $v)-->
+								<option value="{$v}" <!--@if($v == $val->value)-->selected="selected"<!--@end-->>{$v}</option>
+							<!--@end-->
+						<!--@end-->
+						</select>
+	
+					<!--// 한국 주소 검색 -->
+					<!--@elseif($val->column_type == 'kr_zip')-->
+						<div class="krZip">
+						
+							
+							<div id="zone_address_list_{$val->column_name}" style="display:none">
+								<select name="{$val->column_name}" class="w300"></select>
+								<!--//선택버튼을 없앰
+								<a href="#" onclick="doSelectKrZip('{$val->column_name}'); return false;" class="button"><span>{$lang->cmd_select}</span></a>
+								-->
+								<a href="#" onclick="doHideKrZipList('{$val->column_name}'); return false;" class="button"><span>{$lang->cmd_cancel}</span></a>
+							</div>
+							<div id="zone_address_search_{$val->column_name}" style="display:<!--@if($val->value[0])-->none<!--@else-->inline<!--@end-->;">
+								<input type="text" name="_tmp_address_search_{$val->column_name}" class="inputTypeText w400" value="" />
+								<a href="#" onclick="doSearchKrZip('{$val->column_name}'); return false;" class="button"><span>{$lang->cmd_search}</span></a>
+							</div>
+							<br/>
+							<span>
+							* 동이름을 입력하시고 검색버튼을 눌러주세요
+							</span>
+							<div class="address2">
+								<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value[1])}" class="inputTypeText w400" />
+							</div>
+						</div>
+	
+					<!--// 일본 주소 검색 -->
+					<!--@elseif($val->column_type == 'jp_zip')-->
+						<input type="text" name="{$val->column_name}" value="{htmlspecialchars($val->value)}" />
+	
+					<!--// 날짜 입력 -->
+					<!--@elseif($val->column_type == 'date')-->
+						<input type="hidden" name="{$val->column_name}" id="date_{$val->column_name}" value="{$val->value}" />
+						<input type="text" class="inputDate inputTypeText" value="{zdate($val->value,'Y-m-d')}" readonly="readonly" />
+						<span class="button"><input type="button" value="{$lang->cmd_delete}" class="dateRemover" /></span>
+					<!--@end-->
+	
+					<p>{$val->description}</p>
+					</td>
+				</tr>
+				<!--@end-->
+			<!--@end-->
+	        <!--@end--><!--@end-->
+	    <!--@end-->
+	    <tr>
+	        <th class="button" colspan="2" style="border:none; border-top:1px solid #E5E5E5; background-color:#fff;">
+	            <input type="image" src="./img/button_ok.png" accesskey="s"/>
+	            <a class="buttonBack" style="cursor:pointer;"><img src="./img/button_back.png" /></a>
+	        </th>
+	    </tr>
+	    </table>
+	</form>
+</div>
+
+<div id="signup_body_3_bottom"></div>
+
+
+
+<script type="text/javascript">
+(function($){
+    $(function(){
+        var option = { changeMonth: true, changeYear: true, gotoCurrent: false,yearRange:'-100:+10', onSelect:function(){
+
+            $(this).prev('input[type="hidden"]').val(this.value.replace(/-/g,""))}
+        };
+        $.extend(option,$.datepicker.regional['{$lang_type}']);
+        $(".inputDate").datepicker(option);
+		$(".dateRemover").click(function() {
+			$(this).parent().prevAll('input').val('');
+			return false;});
+			
+		$(".buttonBack").click(function() {
+			history.back();
+		});
+    });
+})(jQuery);
+</script>
+<!--#include("./common_footer.html")-->

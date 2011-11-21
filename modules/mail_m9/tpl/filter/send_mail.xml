@@ -1,0 +1,15 @@
+<filter name="send_mail" module="mail_m9" act="procMail_m9AdminSendMail" confirm_msg_code="confirm_submit">
+    <form>
+	    <node target="sender_name" required="true"  maxlength="250"  />
+	    <node target="sender_email" required="true"  maxlength="250"/>
+	    <node target="receiptor_name" required="true"  maxlength="250" />
+	    <node target="receiptor_email" required="true" maxlength="250"/>
+	    <node target="title" required="true" minlength="1" maxlength="250" />
+	    <node target="content" required="true" maxlength="4000"/>
+	    <node target="content_type" required="true" maxlength="4"/>
+    </form>
+    <response callback_func="completeSend">
+        <tag name="error" />
+        <tag name="message" />
+    </response>
+</filter>

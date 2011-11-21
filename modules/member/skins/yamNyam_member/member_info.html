@@ -1,0 +1,124 @@
+<!--#include("./common_header.html")-->
+
+<div class="mypage_middle">
+	<div id="mypage_middle_top"></div>
+	<table cellspacing="0" class="rowTable">
+		<tr>
+			<th><div><img src="./img/checked.png" /> {$lang->user_name}</div></th>
+			<td class="wide">{htmlspecialchars($member_info->user_name)}</td>
+		</tr>
+<!--		<tr>
+			<th><div><img src="./img/checked.png" /> {$lang->nick_name}</div></th>
+			<td>{htmlspecialchars($member_info->nick_name)}</td>
+		</tr>
+-->
+		<tr>
+			<th><div><img src="./img/icon_check_blank.png"> {$lang->group}</div></th>
+			<td>
+				<!--@foreach($member_info->group_list as $key => $val)-->
+					<!--@if($val=="관리그룹")-->
+						{$val}
+					<!--@else if($val=="상점회원")-->
+						상점가 등록 회원
+					<!--@else if($val=="일반회원")-->
+						{$val}
+					<!--@else if($val=="성균관대")-->
+						성균관대학교 학생 인증 회원
+					<!--@else if($val=="교직원")-->
+						성균관대학교 교직원 인증 회원
+					<!--@end-->
+				<!--@end-->
+			</td>
+		</tr>
+		<tr>
+			<th><div><img src="./img/icon_check_blank.png"> {$lang->signup_date}</div></th>
+			<td>{zdate($member_info->regdate,"Y-m-d H:i")}</td>
+		</tr>
+
+		<!--@if($member_info->member_srl == $logged_info->member_srl || $logged_info->is_admin == 'Y' )-->
+		<tr>
+			<th><div><img src="./img/icon_check_blank.png"> {$lang->last_login}</div></th>
+			<td>{zdate($member_info->last_login,"Y-m-d H:i")}</td>
+		</tr>
+		<!--@end-->
+	
+		<!--@if($member_config->enable_openid=="Y")-->
+			<!--@if(sizeof($openids) > 0)-->
+				<tr>
+					<th colspan="2" class="title"><div>{$lang->openid} </div></th>
+				</tr>
+				<!--@foreach($openids as $openid)-->
+					<tr>
+						<th><div>{$lang->openid}</div></th>
+						<td> <a href="{$openid->bookmarklet}">{$openid->openid}</a> </td>
+					</tr>
+				<!--@end-->
+			<!--@end-->
+		<!--@end-->
+
+		<!--@if($extend_form_list)-->
+			{@ $dummy_chk = 0 }
+			<!--@foreach($member_info->group_list as $key => $val)-->
+				<!--@if($val=='상점회원')-->
+					{@$is_shop='Y'}
+				<!--@end-->
+			<!--@end-->
+			<!--@foreach($extend_form_list as $key => $val)-->
+				<!--@if( (($val->column_name=='recentaddress') && ($is_shop=='Y')) || (($val->column_name=='opentime' || $val->column_name=='closetime') && !($is_shop=='Y' || $logged_info->is_admin=='Y')) )-->
+				<!--@else-->
+				<!--@if(($val->column_title != '문자 수신 허용' && $is_shop=='Y')||(($val->column_title != '최근배송지'&& $val->column_title != '알림매체') && $is_shop!='Y'))-->
+					<tr <!--@if($dummy_chk==0)-->class="first-child" {@ $dummy_chk = 1; }<!--@end-->>
+						<th>
+							<div>
+									<!--@if( ($val->column_name=='cellphone') || ($val->column_name=='validationcode') )-->
+										<img src="./img/checked.png" />
+									<!--@else--> 
+										<img src="./img/icon_check_blank.png">
+									<!--@end-->
+									 {htmlspecialchars($val->column_title)}
+							</div>
+						</th>
+						<td>
+							<!--@if($val->is_private)-->
+								<span class="privateItem">{$lang->private}</span>
+							<!--@else-->
+								<!--@if($val->column_type=='tel' && $val->value[0] && $val->value[1] && $val->value[2])-->
+									{htmlspecialchars($val->value[0])} 
+									<!--@if($val->value[1])-->-<!--@end-->
+									{htmlspecialchars($val->value[1])} 
+									<!--@if($val->value[2])-->-<!--@end-->
+									{htmlspecialchars($val->value[2])}
+									<!--@elseif($val->column_type=='kr_zip')-->
+									{htmlspecialchars($val->value[0])}
+									<!--@if($val->value[1]&&$val->value[0])--><br /><!--@end-->
+									{htmlspecialchars($val->value[1])}
+									<!--@elseif($val->column_type=='checkbox' && is_array($val->value))-->
+									{htmlspecialchars(implode(", ",$val->value))}&nbsp;
+									<!--@elseif($val->column_type=='date' && $val->value)-->
+									{zdate($val->value, "Y-m-d")}&nbsp;
+									<!--@else-->
+									{nl2br(htmlspecialchars($val->value))}&nbsp;
+									<!--@end-->
+								<!--@end-->
+						</td>
+					</tr>
+				<!--@endif-->
+				<!--@end-->
+			<!--@end-->
+		<!--@end-->
+	</table>
+	<div class="button">
+		<!--@if($member_info->member_srl == $logged_info->member_srl)-->
+			<a href="{getUrl('act','dispMemberModifyInfo','member_srl','')}"  ><span><input type=button value="{$lang->cmd_modify_member_info}"/></span></a>
+			<!--@if($logged_info->is_openid)-->
+				<a href="{getUrl('act','dispMemberOpenIDLeave','member_srl','')}" ><span><input type=button value="{$lang->cmd_leave}</span>"/></a>
+			<!--@else-->
+				<a href="{getUrl('act','dispMemberModifyPassword','member_srl','')}" ><span><input type=button value="{$lang->cmd_modify_member_password}"/></span></a>
+				<a href="{getUrl('act','dispMemberLeave','member_srl','')}" ><span style="vertical-align:top;"><input type=button value="{$lang->cmd_leave}"/></span></a>
+			<!--@end-->
+		<!--@end-->
+	</div>
+</div>
+<div class="mypage_bottom"></div>
+
+<!--#include("./common_footer.html")-->

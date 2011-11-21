@@ -1,0 +1,188 @@
+
+<!--%import("js/mboard.js")-->
+<!--%import("css/mboard.css")-->
+<!--%import("css/order_confirm.css")-->
+<style>
+.ui-btn-inner {display: none;text-align:center; }
+</style>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	// 배송지 선택시 자동으로 폼에 입력
+	$('#selectAddress').change(function(){
+		$("#selectAddress option:selected").each(function () {
+        	if ($(this).val() == -1){
+        		$("#inputAddress").val('');
+        	}
+        	else {
+            	$("#inputAddress").val($(this).val());
+        	}
+  	    });
+  	});
+});
+var payment = new Array();
+</script>
+
+{@//주문번호
+$no_head = $logged_info->member_srl%100;
+$today=mktime();
+$no_middle = date('m', $today);
+$no_bottom = date('s', $today);
+$real_no = $no_head.$no_middle.$no_bottom;
+
+
+$temp_name="";
+$sum_product=0;
+$sum_product_flag=0;
+$sum_all_product=0;
+$count_product=0;
+$span_tmp=0;
+$_tmp=0;
+}
+
+	<!--@foreach($Document_list as $no => $document)-->
+		<!--@if($temp_name != $document->getNickName())-->
+			<!--@if($sum_product_flag == 1)-->
+				{@ 
+					$span_sum[$_tmp]=$sum_product;
+					$span[$_tmp]=$span_tmp;
+					$_tmp++;
+					$span_tmp=0;
+				}
+				<form name="form">
+					<div style="width:100%-10px;text-align:right;padding:5px;background:#eee">합계 : {number_format($sum_product)}원</div>
+					<div class="radio_cash" onClick="payment_select('{$span_tmp}','cash')"><input type="radio" onClick="payment_select('{$span_tmp}','cash')" name="pay" value="cash"> <img src="./img/cash.png" width="15" height="15" style="vertical-align:middle">현금결제</div>
+					<div class="radio_card"style="margin-bottom:20px;" onClick="payment_select('{$span_tmp}','card')"><input type="radio" onClick="payment_select('{$span_tmp}','card')" name="pay" value="card"> <img src="./img/card.png" width="15" height="15" style="vertical-align:middle">카드결제</div>
+				</form>
+				{@$sum_product_flag=0;}
+			<!--@endif-->
+			{@$sum_product_flag=1;
+			$sum_product=0;}
+			<table width="100%" border="0" class="restaurant_name">
+				<tr>
+					<td width="50%"><b>{$document->getNickName()}</b></td>
+					<td width="50%" style="text-align:right;padding-right:5px;">주문번호 : {$real_no}</td>
+				</tr>
+			</table>
+		<!--@endif-->
+			<table border="0" width="100%" style="border-bottom:1px solid #bbb">
+				<tr>
+					<td>
+						<img src="{$document->getThumbnail(90, 70, 'crop')}" width="90" height="70" style="border:1px solid #aaa"/>
+					</td>
+					<td width="45%">
+						<p><b>{$document->getTitle(30)}</b></p>
+						<p><span class="number">{number_format($document->getExtraValue(1))}</span>원 x <span class="number">{$amount[$document->document_srl]}</span>개</p>			
+					</td>
+					<td>
+						<p><span class="number">{number_format($document->getExtraValue(1)*$amount[$document->document_srl])}</span>원</p>
+					</td>
+				</tr>
+			</table>
+		{@$temp_name=$document->getNickName();
+		$sum_product+=$document->getExtraValue(1)*$amount[$document->document_srl];
+		$sum_all_product+=$document->getExtraValue(1)*$amount[$document->document_srl];
+		$count_product++;
+		$span_tmp++;
+		$strData .= $document->document_srl."|".$document->getNickName()."|".$document->getTitle()."|".$amount[$document->document_srl]."|".$document->getExtraValue(1)*$amount[$document->document_srl]."|".$document->getExtraValue(3)."|".""."&&";
+		}
+	<!--@end-->
+	{@ 
+		$span_sum[$_tmp]=$sum_product;
+		$span[$_tmp]=$span_tmp;
+		$_tmp++;
+		$_span_tmp=0;
+	}
+	<form>
+		<div style="width:100%-10px;text-align:right;padding:5px;background:#eee">합계 : {number_format($sum_product)}원</div>
+		<div class="radio_cash" onClick="payment_select('{$span_tmp}','cash')"><input type="radio" onClick="payment_select('{$span_tmp}','cash')" name="pay" value="cash"> <img src="./img/cash.png" width="15" height="15" style="vertical-align:middle">현금결제</div>
+		<div class="radio_card"style="margin-bottom:20px;" onClick="payment_select('{$span_tmp}','card')"><input type="radio" onClick="payment_select('{$span_tmp}','card')" name="pay" value="card"> <img src="./img/card.png" width="15" height="15" style="vertical-align:middle">카드결제</div>
+	</form>
+
+	<form action="./" method="post" onsubmit="return check_form(this);" id="form1">	    
+
+	<div style="width:300px; clear:both; text-align:center; padding-top:10px; padding-bottom:10px;border:5px solid #bbb; margin:5px;">
+		<span style="color:#b10700; font-size:13px; font-weight:bold;">최종결제금액 : {number_format($sum_all_product)} 원</span>
+	
+		{@$recent_address = explode("|",$logged_info->recentaddress);}
+		<p style="color:white;font-size:12px; width:90%;text-align:center">
+	
+		<select id="selectAddress" style="width:280px;margin-left:10px;">
+			<option value="{$logged_info->address[0].$logged_info->address[1]}">최근배송지 목록</option>
+			<!--@for($i=0;$i<3;$i++)-->
+				<!--@if($recent_address[$i])-->
+					<option value="{$recent_address[$i]}">→{$recent_address[$i]}</option>
+				<!--@endif-->
+			<!--@end-->
+			<option value="{$logged_info->address[0].$logged_info->address[1]}">가입시 주소</option>
+			<option value="-1">직접입력하기</option>
+		</select>
+		
+		</p>
+		<textarea type="text" name="extra_vars13" id="inputAddress" class="text" style="width:90%;"></textarea>
+	</div>
+	<!--@for($i=0; $i<count($span);$i++)-->
+		{@
+			$strSpan_sum .= $span_sum[$i]."|";
+			$strSpan .= $span[$i]."|";
+		}
+	<!--@end-->
+	<div style="border-top:none;border-bottom:none;height: 35px;background-color: #6386af;	text-align: center;
+		padding-top: 13px;">
+		<input type="hidden" name="mid" value="{$mid}" />
+		<input type="hidden" name="document_srl" value="{$document_srl}" />
+		<input type="hidden" name="title" class="iText" title="{$lang->title}" value="{$logged_info->user_name}님의 주문 입니다."/>
+		<input type="hidden" name="content" class="contentvar" value="test"/>
+		<input type="hidden" name="extra_vars1" class="text" value="{$strData}"/>
+	    <input type="hidden" name="extra_vars2" class="text" value="{$strSpan}" />
+	    <input type="hidden" name="extra_vars3" class="text" value="7" />
+	    <input type="hidden" name="extra_vars4" class="text" value="{$logged_info->cellphone[0]}{$logged_info->cellphone[1]}{$logged_info->cellphone[2]}" />
+	    <input type="hidden" name="extra_vars6" id="mobile_content" class="text" value="test" />
+	    <input type="hidden" name="extra_vars8" class="text" value="{$strSpan_sum}" />
+	    <input type="hidden" name="extra_vars10" class="text" value="{$notification}" />
+	    <input type="hidden" name="extra_vars14" class="text" value="{$real_no}" />
+	    <input type="hidden" name="mobile" value="1"/>
+	    <input type="hidden" name="payment" id="payment" value=""/>
+		<input type="submit" value="주문완료">
+	</div>
+</form>
+
+<script type="text/javascript">
+$(".radio_cash").click(function(){
+	$(this).css("background","#c3dced");
+	$(this).parent().find(".radio_card").css("background","#ccc");
+	$(this).find("input").attr("checked","checked");
+});
+$(".radio_card").click(function(){
+	$(this).css("background","#c3dced");
+	$(this).parent().find(".radio_cash").css("background","#ccc");
+	$(this).find("input").attr("checked","checked");
+});
+function check_form(e){
+	var address_value = $("#inputAddress").attr('value');
+	if(payment.length < {count($span)}){
+		alert("결제방법을 모두 선택해주세요.");
+		return false;
+	} else {
+		for(var i=0; i<payment.length; i++){
+			$('#payment').val($('#payment').val()+payment[i]+"|");
+		}
+	}
+	
+	if(address_value && (address_value.indexOf("율전")>-1 || address_value.indexOf("천천")>-1 || address_value.indexOf("율천")>-1 || address_value.indexOf("성균")>-1 || address_value.indexOf("성대")>-1 )) {		
+		if(confirm("해당 주문내용이 확실합니까?")) {
+			delCookie();
+			return procFilter(e, window.insert);
+		}
+		else return false;
+	}
+	else {
+		alert("주문 가능 지역은 성균관대학교 자연과학 캠퍼스 주변으로 제한됩니다.");
+		return false;
+	}
+}
+
+function payment_select(index, value){
+	payment[index] = value;
+}
+</script>
