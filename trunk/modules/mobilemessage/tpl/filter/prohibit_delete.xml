@@ -1,9 +1,0 @@
-<filter name="prohibit_delete" module="mobilemessage" act="procMobilemessageAdminProhibitDelete">
-    <form />
-    <parameter />
-    <response callback_func="completeDeleteProhibit">
-        <tag name="error" />
-        <tag name="message" />
-        <tag name="page" />
-    </response>
-</filter>

@@ -1,8 +1,0 @@
-<filter name="noticom_append" module="mobilemessage" act="procMobilemessageAdminNotiComAppend" confirm_msg_code="confirm_submit">
-    <form />
-    <parameter />
-    <response callback_func="completeNotiComAction">
-        <tag name="error" />
-        <tag name="message" />
-    </response>
-</filter>

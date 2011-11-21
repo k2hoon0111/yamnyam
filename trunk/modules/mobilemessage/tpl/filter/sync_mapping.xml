@@ -1,8 +1,0 @@
-<filter name="sync_mapping" module="mobilemessage" act="procMobilemessageAdminSyncMapping">
-    <form />
-    <parameter />
-    <response>
-        <tag name="error" />
-        <tag name="message" />
-    </response>
-</filter>
