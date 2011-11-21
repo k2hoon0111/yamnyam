@@ -1,0 +1,104 @@
+<!--// colorset의 값에 따라 css 파일을 import 한다 -->
+<!--%import("css/default.css")-->
+
+<!--%import("./filter/login.xml")-->
+<!--%import("./filter/openid_login.xml")-->
+<!--%import("./js/login.js")-->
+
+
+<script type="text/javascript">
+    var keep_signed_msg = "{$lang->about_keep_signed}";
+    xAddEventListener(window, "load", function(){ doFocusUserId("fo_login_widget"); });
+
+//-------------- placeholder 효과 위한 스크립트 04.06 김진국
+
+	function clearid(){
+		$("#id_box").css('background','none');
+	}
+	
+	function clearPassword(){
+		$("#pass_box").css('background','none');
+	}	
+
+//-----------------------------------------------------------
+
+</script>
+
+<fieldset id="login" class="login_{$colorset}">
+<form action="./" method="post" name="login_form_w" onsubmit="return procFilter(this, widget_login)" id="fo_login_widget">
+
+    <div class="idpwWrap">
+        <div class="idpw">
+			<div class="inputBox">
+				<div class="innerInput">				
+					<input id="id_box" name="user_id" type="text" title="user id" tabindex="1" onFocus="clearid();"/>
+				</div>
+			</div>
+			<div class="login_keep">
+				<input type="checkbox" name="keep_signed" id="keepid" value="Y" onclick="if(this.checked) return confirm(keep_signed_msg);" />
+				<label for="keepid"><img src="images/loginKeep.png"></label>
+			</div>
+			<div class="inputBox">
+				<div class="innerInput">
+					<!--<input name="password" type="text" title="password" class="pwInput" tabindex="2" onFocus="clearPassword(this.form);" style="background:transparent; border:none; color:#AAA" value="비밀번호"/>-->
+					
+					<input id="pass_box" name="password" type="password" title="password" onFocus="clearPassword();" class="pwInput" tabindex="2" />
+				</div>
+			</div>
+			<div class="login_button">
+				<input type="image" src="./images/button_login.png" alt="login" class="login" tabindex="3"/>
+			</div>
+        </div>
+		<div class="auth_box">
+			<span class="findAccount">
+			<a href="{getUrl('act','dispMemberResendAuthMail','mid','mypage')}"><img src="images/sendAuthMail.png"/></a>&nbsp&nbsp&nbsp&nbsp&nbsp
+			</span>
+			<span class="findAccount"><img src="images/seperator.png" /></span>
+			<span class="findAccount">
+			<a href="{getUrl('act','dispMemberFindAccount','mid','mypage')}">&nbsp&nbsp&nbsp&nbsp&nbsp<img src="images/findIdPw.png"/></a>
+			</span>
+			<span style="position:relative;float:left;" class="save">
+	
+	        <!--@if($member_config->enable_openid=='Y')-->
+	        <br />
+	        <input name="use_open_id" id="use_open_id" type="checkbox" value="Y" onclick="toggleLoginForm(this); return false;" />
+	        <label for="use_open_id">Open ID</label>
+	        <!--@end-->
+			</span>
+
+		</div>
+    </div>
+    <!--@if($member_config->enable_ssl=='Y')-->
+	<p class="securitySignIn <!--@if($ssl_mode)-->SSL<!--@else-->noneSSL<!--@end-->">
+        <a href="#" onclick="toggleSecuritySignIn(); return false;">{$lang->security_sign_in}</a>
+    </p>
+    <!--@end-->
+    <div class="loginWrap">
+		&nbsp&nbsp
+   	</div>
+
+</form> 
+</fieldset>
+<!-- OpenID -->
+<!--@if($member_config->enable_openid=='Y')-->
+<fieldset id="openid_login" class="openid_login_{$colorset}" style="display:none;">
+<legend>{$lang->cmd_login}</legend>
+  <form action="{getUrl('module','member','act','procMemberOpenIDLogin')}" method="post" onsubmit="return procFilter(this, openid_login)" >
+      <div class="idpwWrap">
+        <div class="idpw">
+          <p>{$lang->openid}</p>
+          <input type="text" name="openid" class="openid_user_id" />
+        </div>
+        <input type="image" src="./images/default/buttonLogin.gif" alt="login" class="login" />
+      </div>
+      <p class="save">
+          <input name="use_open_id" id="use_open_id_2" type="checkbox" value="Y" onclick="toggleLoginForm(this); return false;"/>
+          <label for="use_open_id_2">Open ID</label>
+      </p>
+  </form>
+</fieldset>
+<!--@end-->
+
+<script type="text/javascript">
+  xAddEventListener(window, "load", function(){ doFocusUserId("fo_login_widget"); });
+</script>

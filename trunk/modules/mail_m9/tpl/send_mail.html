@@ -1,0 +1,76 @@
+<!--%import("filter/send_mail.xml")-->
+<!--%import("js/script.js")-->
+
+
+<div style="border-bottom:2px solid #ccc; margin:10px 0px;"><img src="layouts/yamnyam_shop_layout/images/6-1.png" width="300" height="36"></div>
+
+<div class="infoText">{nl2br($lang->about_mail_m9)}</div>
+
+<form action="./" method="get" onsubmit="return procFilter(this, send_mail)">
+<table cellspacing="0" align="center" class="adminTable gap1" style="width:600px">
+<col width="200" />
+<col />
+<thead>
+    <tr>
+        <th scope="col">{$lang->sender_name}</th>
+        <td>
+            <input type="text" name="sender_name" value="{$logged_info->user_name}" class="inputTypeText w400" /> 
+            <p>{$lang->about_sender_name}</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">{$lang->sender_email}</th>
+        <td>
+            <input type="text" name="sender_email" value="{$logged_info->email_address}" class="inputTypeText w400" /> 
+            <p>{$lang->about_sender_email}</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">{$lang->receiptor_name}</th>
+        <td>
+            <input type="text" name="receiptor_name" value="" class="inputTypeText w400" /> 
+            <p>{$lang->about_receiptor_name}</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">{$lang->receiptor_email}</th>
+        <td>
+            <input type="text" name="receiptor_email" value="" class="inputTypeText w400" /> 
+            <p>{$lang->about_receiptor_email}</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">{$lang->send_to_all}</th>
+        <td>
+            <input type="checkbox" name="send_to_all" value="Y" onclick="changeOption(this.checked)" /> 
+            <p>{$lang->about_send_to_all}</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">{$lang->title}</th>
+        <td>
+            <input type="text" name="title" value="" class="inputTypeText w400" /> 
+            <p>{$lang->about_title}</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">{$lang->content}</th>
+        <td>
+            <textarea name="content" class="inputTypeTextArea w400">{$sample_code}</textarea> 
+            <p>{$lang->about_content}</p>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col">{$lang->content_type}</th>
+        <td>
+            <input type="text" name="content_type" value="html" class="inputTypeText w400" readonly="readonly" /> 
+            <p>{$lang->about_content_type}</p>
+        </td>
+    </tr>
+</table>
+
+    <!-- 버튼 -->
+    <div class="tRight gap1">
+        <span class="button"><input type="submit" value="보내기" accesskey="s" /></span>
+    </div>
+</form>

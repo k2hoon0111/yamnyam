@@ -1,0 +1,379 @@
+<!--@foreach($oDocument->getExtraVars() as $key => $val)-->
+    <!--@if($val->name=="위도")-->
+    {@
+		$latitude = $val->getValueHTML();
+    }
+    <!--@elseif($val->name=="경도")-->
+    {@
+		$longitude = $val->getValueHTML();
+    }
+    <!--@end-->
+<!--@end-->
+
+<script type="text/ecmascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+// <![CDATA[ 
+(function($){
+	$(function(){
+		$(document).ready(function(){
+			$("#pre_star").click(function(e){
+				var x = (e.pageX - $(this).offset().left - 100);
+				var y = x/21.6;
+				y = Math.round(y);
+				x = y* 21.6;
+				$("#pre_star_on").css('width',x);
+				$("#pre_star_point").empty();
+				$("#pre_star_point").append(y+".0");
+			})
+		});
+	});
+	
+			
+		
+    $(function(){
+		$(document).ready(function() {
+			var latlng = new google.maps.LatLng({$latitude}, {$longitude});
+			var myOptions = {
+				zoom: 16,
+				center: latlng,
+				mapTypeId: google.maps.MapTypeId.ROADMAP,
+				scrollwheel: false
+			};
+			
+			var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+						
+			var marker = new google.maps.Marker({
+		      position: latlng, 
+		      map: map, 
+		      title:"{$oDocument->getTitle()}"
+			});
+		    
+			google.maps.event.addListener(marker, 'click', function() { 
+			var infowindow = new google.maps.InfoWindow( 
+						 { content: marker.title, 
+						   size: new google.maps.Size(100,100) 
+						 })
+			infowindow.open(map, marker);
+			});
+
+			$("#buttonPreference1123").click(function(e) {
+				e.preventDefault();							
+		        
+				var maskHeight = $(document).height();
+				var maskWidth = $(window).width();
+				
+				//인터넷 익스플로러에서 오류남
+				//How to fix this problem : http://www.kevinleary.net/jquery-fadein-fadeout-problems-in-internet-explorer/
+				$("#mask2").fadeTo("slow", 0.3);
+	
+			
+				$('#mask2').css('width', maskWidth);
+				$('#mask2').css('height', maskHeight);
+	
+				$("#mask2").show();
+				
+	
+				var winH = $(window).height();
+		        var winW = $(window).width();
+	
+		        $("#divPreference1123").css('top',  winH/2-$("#divPreference1123").height()/2);
+		        $("#divPreference1123").css('left', 1000/2-$("#divPreference1123").width()/2);
+	
+				if(jQuery.browser.msie){
+					$("#divPreference1123").css('filter','');
+					$("#divPreference1123").show();
+				}
+				else{
+			        $("#divPreference1123").fadeIn(1000, function(){
+						//$(this).css('filter','');
+					});
+				}
+			});
+		
+			$('#divPreference1123_close').click(function (e) {
+				e.preventDefault();
+				$("#mask2").hide();
+				$('#divPreference1123').hide();
+			});
+			
+			$('#mask2').click(function () {
+				$(this).hide();
+				$('#divPreference1123').hide();
+			}); 
+					
+			$("#pre_submit").click(function(e) {
+				e.preventDefault();
+				var pre_result = $("#pre_star_on").width()/22;
+				
+				var params = new Array();
+				params['document_srl'] = {$oDocument->document_srl};
+				params['grade'] = pre_result;
+	
+				exec_xml('document', 'procDocumentGradeUp', params,function() { alert("평가해주셔서 감사합니다."); location.reload(); });			
+				
+				//doCallModuleAction('document','procDocumentVoteUp','{$document_srl}',pre_result);
+			});
+			
+			var star_ratio = {(float)($oDocument->getExtraValue(8)/$oDocument->get('voted_count'))};
+			$("#star_on").css('width', $("#star_on").width()*star_ratio*0.1);
+		});
+    });
+})(jQuery);
+
+
+// ]]>
+</script>
+
+
+<div id="divRestaurantView">
+	<!-- READ HEADER -->
+	<div class="read_header">
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='한식'">
+				<img src="./images/food_icon_1.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='중식'">
+				<img src="./images/food_icon_2.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='일식'">
+				<img src="./images/food_icon_3.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='양식'">
+				<img src="./images/food_icon_4.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='분식'">
+				<img src="./images/food_icon_5.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='치킨'">
+				<img src="./images/food_icon_6.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='피자'">
+				<img src="./images/food_icon_7.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='보쌈'">
+				<img src="./images/food_icon_8.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='곱창'">
+				<img src="./images/food_icon_9.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>
+		<h1>
+			<span cond="$category_list[$oDocument->get('category_srl')]->title=='기타'">
+				<img src="./images/food_icon_10.png" class="food_icon_small" />
+				<a href="{$oDocument->getPermanentUrl()}">{$oDocument->getTitle()}</a>
+			</span>
+		</h1>	
+		<a cond="$oDocument->getHomepageUrl()" href="{$oDocument->getHomepageUrl()}" class="author">{$oDocument->getNickName()}</a>
+		<p class="sum">
+			<!--span class="read">{$lang->readed_count} <span class="num">{$oDocument->get('readed_count')}</span></span>
+			<span class="vote">{$lang->voted_count} <span class="num">{$oDocument->get('voted_count')}</span></span>
+			<span class="time">{$oDocument->getRegdate('Y.m.d H:i')}</span-->
+		</p>
+	</div>
+	<!-- /READ HEADER -->
+	<!-- READ BODY -->
+	<div class="read_body">
+		<table border="0" class="read_table">
+			<tr>
+				<td rowspan="6">
+					<!--@if(!$oDocument->getUploadedFiles())-->
+						<img src="./images/default.png" class="read_body_img" />
+					<!--@else-->
+						<!--@foreach($oDocument->getUploadedFiles() as $key => $file)-->
+							<img src="{getUrl('')}{$file->download_url}" class="read_body_img" />
+						<!--@end-->
+					<!--@end-->
+				</td>
+			</tr>
+			<tr>
+				<td class="read_table_title" style="height:30px">점포명
+				</td>
+				<td class="read_table_value">{$oDocument->getNickName()}
+				</td>
+			</tr>
+			<tr>
+				<td class="read_table_title" style="height:30px">최소주문가격
+				</td>
+				<td class="read_table_value">
+				{$oDocument->getExtraValue(1)}원
+				</td>
+			</tr>
+			<tr>
+				<td class="read_table_title" style="height:30px">전화번호
+				</td>
+				<td class="read_table_value">
+				{$oDocument->getExtraValue(10)}
+				</td>
+			</tr>
+			<tr>
+				<td class="read_table_title" style="height:30px">결재방법
+				</td>
+				<td class="read_table_value">
+					<span cond="$oDocument->getExtraValueHTML(3)== '현금, 카드'">
+						<img src="./images/cash.png" /> 
+						<img src="./images/card.png" />
+					</span>
+					<span cond="$oDocument->getExtraValueHTML(3)== '현금'">
+						<img src="./images/cash.png" />
+					</span>
+					<span cond="$oDocument->getExtraValueHTML(3)== '카드'">
+						<img src="./images/card.png" />
+					</span>
+				</td>
+			</tr>
+			<tr>
+				<td class="read_table_title" style="height:106px">설명
+				</td>
+				<td class="read_table_value">{$oDocument->getContent(false)}
+				</td>
+			</tr>
+			<tr>
+				<td class="read_table_title">
+				</td>
+				<td class="read_table_grade">
+<!-- 2011/04/06 평점출력, 평점주기 제거. 김누리
+					<div  style="position:relative;float:left">{round((float)($oDocument->getExtraValue(8)/$oDocument->get('voted_count')),2)}
+					</div>
+					<div style="position:relative;float:left">
+						<div id="star_on">
+						</div>
+						<div id="star_off">
+						</div>
+					</div>
+
+					<div align="right" style="margin-top:60px; margin-right:15px;">
+						<span cond="$logged_info">
+							<a id="buttonPreference1123" href="#"><img src="images/button_rating.png" /></a>
+						</span>
+					</div>
+-->
+				</td>
+			</tr>
+		</table>
+<div style="float:left;margin-left:30px;">
+	<div style="float:left;margin-right:5px;">
+		<a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-lang="ko"></a><script type="text/javascript" src="http://platform.twitter.com/widgets.js"></script>
+	</div>
+	<div id="fb-root" style="float:left;"></div>
+	<script>(function(d){
+	  var js, id = 'facebook-jssdk'; if (d.getElementById(id)) {return;}
+	  js = d.createElement('script'); js.id = id; js.async = true;
+	  js.src = "//connect.facebook.net/en_US/all.js#appId=141537755897556&xfbml=1";
+	  d.getElementsByTagName('head')[0].appendChild(js);
+	}(document));</script>
+	<div class="fb-like" data-send="true" data-width="450" data-show-faces="false" style="float:left;"></div>
+</div>	</div>
+	<!-- /READ BODY -->
+	
+		{@
+			$today=mktime();
+			$current_day = date('w', $today);
+			$current_time = date('G', $today);
+			
+			$temp_current = 0;
+			$current_time_str = 0;
+		}
+		<!--@for($temp_i=0; $temp_i<7; $temp_i++)-->
+			<!--@if($temp_i==$current_day)-->
+				<!--@for($temp_j=0; $temp_j<24; $temp_j++)-->
+					<!--@if ($temp_j==$current_time)-->
+						{@
+							$temp_current++;
+							$current_time_str = $temp_current;
+						}
+					<!--@else-->
+						{@
+							$temp_current++;
+						}
+					<!--@end-->
+				<!--@end-->
+			<!--@else-->
+				<!--@for($temp_j=0; $temp_j<24; $temp_j++)-->
+					{@
+						$temp_current++;
+					}
+				<!--@end-->
+			<!--@end-->
+		<!--@end-->
+
+		<!--@if(substr($oDocument->getExtraValue(9) ,$current_time_str-1, 1))-->
+			{@$closed='N';}
+		<!--@else-->
+			{@$closed='Y';}
+		<!--@end-->
+
+	
+	<div class ="main_menu">
+		<div class="main_menu_title"></div>
+		<img class="zbxe_widget_output" widget="content" skin="yamnyam_for_storelist2" content_type="document" module_srls="55" list_type="image_title" tab_type="none" markup_type="table" list_count="60" cols_list_count="8" page_count="1" option_view="thumbnail,title" show_browser_title="N" show_comment_count="N" show_trackback_count="N" show_category="N" show_icon="N" order_target="list_order" order_type="desc" thumbnail_width="154" thumbnail_height="124" thumbnail_type="crop" store_name="{$oDocument->getNickName()}" closed="{$closed}" />
+	</div>
+	<div class="map_body">
+		<h1>상점 위치</h1>
+		<br />
+		<div id="map_canvas">
+		</div>
+	</div>
+	
+	
+	<!-- READ FOOTER -->
+	<div class="read_footer">
+		<div class="btnArea">
+<!--2010.04.07 김진국, 금일 점포에 보여주기위해 일단 목록버튼 빼라는 누리형 지시
+			<span class="goList"><a href="{getUrl('document_srl','')}" class="btn">{$lang->cmd_list}</a>
+			</span>
+-->
+			<span class="goEdit">
+				<a cond="$oDocument->isEditable()" class="btn" href="{getUrl('act','dispBoardWrite','document_srl',$oDocument->document_srl,'comment_srl','')}">{$lang->cmd_modify}</a>
+				<a cond="$oDocument->isEditable()" class="btn" href="{getUrl('act','dispBoardDelete','document_srl',$oDocument->document_srl,'comment_srl','')}">{$lang->cmd_delete}</a>
+			</span>
+		</div>
+	</div>
+	<!-- /READ FOOTER -->
+</div>
+
+
+<include cond="$oDocument->allowTrackback()" target="_trackback.html" />
+<include cond="$oDocument->allowComment()" target="_comment.html" />
+
+<div id="divRestaurantWriteComment">
+<!-- WRITE COMMENT -->
+
+<!-- /WRITE COMMENT -->
+</div>
+
+
+<div id="divPreference1123" class="window" style="">
+	<div id="pre_star">
+		<div id="pre_star_off"></div>
+		<div id="pre_star_on"></div>
+	</div>
+	<div id="divPreference1123_close"><img src="./images/button_close.png" /></div>
+	<div id="pre_star_point">5.0</div>
+	<div id="pre_submit"><img src="./images/button_confirm.png" /></div>
+</div>
+<div id="mask2"></div>

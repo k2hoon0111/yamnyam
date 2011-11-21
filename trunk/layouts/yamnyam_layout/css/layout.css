@@ -1,0 +1,123 @@
+@charset "utf-8";
+
+
+
+.divCaloryViews { visibility:hidden; }
+
+
+#mainmenu { position: relative; margin-left:150px; margin-top:0px; }
+a { outline: none;selector-dummy:expression(this.hideFocus=true); }
+
+.dock0 { position: absolute; height: 90px; 	text-align: center; left:-120px; top:-15px; width:100px;}
+.dock-container0 {	height: 90px;	background: none;}
+a.dock-item0 { display: block; width: 90px;	color: #000; position: absolute; top: -5px; text-align: center; text-decoration: none;font: bold 12px Arial, Helvetica, sans-serif; }
+.dock-item0 img { border: none; margin: 5px 10px 0px; width: 100%; }
+
+.dock2 { position: absolute; height: 90px; 	text-align: center; left:0; top:0; width:100px;}
+.dock-container2 {	height: 90px;	background: none;}
+a.dock-item2 { display: block; width: 90px;	color: #000; position: absolute; top: -5px; text-align: center; text-decoration: none;font: bold 12px Arial, Helvetica, sans-serif; }
+.dock-item2 img { border: none; margin: 5px 10px 0px; width: 100%; }
+
+.dock3 { position: absolute; height: 90px; 	text-align: center; left:120px; top:-35px; width:100px;}
+.dock-container3 {	height: 50px;	background: none;}
+a.dock-item3 { display: block; width: 90px;	color: #000; position: absolute; top: 0px; text-align: center; text-decoration: none;font: bold 12px Arial, Helvetica, sans-serif; }
+.dock-item3 img { border: none; margin: 5px 10px 0px; width: 100%; }
+
+.dock4 { position: absolute; height: 90px; 	text-align: center; left:240px; top:-15px; width:100px;}
+.dock-container4 {	height: 50px;	background: none;}
+a.dock-item4 { display: block; width: 90px;	color: #000; position: absolute; top: 0px; text-align: center; text-decoration: none;font: bold 12px Arial, Helvetica, sans-serif; }
+.dock-item4 img { border: none; margin: 5px 10px 0px; width: 100%; }
+
+.dock5 { position: absolute; height: 90px; 	text-align: center;	left:360px; top:-45px; width:100px;}
+.dock-container5 {	height: 50px;	background: none;}
+a.dock-item5 { display: block; width: 90px;	color: #000; position: absolute; top: 0px; text-align: center; text-decoration: none;font: bold 12px Arial, Helvetica, sans-serif; }
+.dock-item5 img { border: none; margin: 5px 10px 0px; width: 100%; }
+
+/* Layout */
+form, fieldset{ border:0; margin:0; padding:0;}
+a:link,a:visited,a:active,a:hover {text-decoration:none; color:#000;}
+
+body { background-color:#e7e4e2; font-family:'Malgun Gothic', "AppleGothic", "굴림", 'gulim';}
+ 
+#layoutSiteMainWrap {background-image: url('../images/background.png'); background-repeat: repeat-y;
+background-position: center; width:1200px; margin:0 auto; overflow: hidden;}
+
+#layoutSiteMain { width:998px; margin:auto; background-image:url("../images/layout_background.png");
+	background-repeat: repeat-x; border:0;/* border-left:1px solid #a2a09f; border-right:1px solid #a2a09f; */}
+
+#layoutHeader { zoom:1; position:relative; background-image:url("../images/layoutheader_background.png");
+	background-repeat: no-repeat; margin-top:-5px; height:220px;}
+#layoutHeader .button_beta { background-image: url('../images/button_beta.png'); width:65px; height:64px; position:absolute; left:255px; top:30px; }
+#layoutHeader .logo{ width:314px; height:84px; cursor:pointer; position:absolute; top:35px; left:35px; }
+#layoutHeader:after{ content:""; display:block; clear:both;}
+#layoutHeader .login_info{ position:absolute; top:10px; left:650px; width:340px; height:30px; background-image:url("../images/login_background.png");}
+#layoutHeader .account{ position:absolute; top:40px; left:900px; text-align:right; width:78px; height:18px; }
+#layoutHeader .gnb{ position:absolute; top:90px; left:460px; margin-left:-130px}
+
+#layoutBody .body{ margin:20px 0; zoom:1; }
+#layoutBody .body:after{ content:""; display:block; clear:both;}
+#layoutBody .content{ float:left; margin:0; padding:9px 0 9px 9px; }
+
+#layoutFooter { float:left; background-image:url("../images/layout_copyright_background.png"); background-repeat: no-repeat; background-position: center; width:1000px; height:100px; color:#ccc; }
+#divBottomMenu { text-align:center; padding-top:5px; color:#959595}
+#divCopyright {  text-align:right; color:#666; height:81px; }
+
+#divFoodList {width:760px;}
+
+#tdPayment {color:red; }
+
+#mask2	{ position:absolute; z-index:9001; background-color:#fff; display:none; left:0px; top:0px; }
+#mask	{ position:absolute; z-index:9000; background-color:#000; display:none; left:0px; top:0px; }
+#boxes .window	{ position:absolute; width:385px; height:198px; display:none; z-index:9999; }
+#boxes .loginbox_header	{ height:16px; width:392px; background-image:url('../images/upper_box.png'); margin-left:-4px; margin-top:-5px;}
+#boxes #divLogin .close_button { text-align:right; margin-top:30px; margin-right:80px; }
+#boxes #divLogin	{ position:absolute; width:485px; height:244px; background-image: url("../images/login_box_background.png"); background-repeat: no-repeat;}
+#boxes #divLogin .windowHeader { width:385px; height:42px; text-align:right; margin-top: 4px; margin-left:25px; background-image:url('../images/boxHeader.png');}
+#boxes #divLogin .windowBody { margin-left:20px; }
+#boxes #divLogin .box_body	{ width:385px; background:#fff; margin-top:-10px; border-left:1px solid #d5d5d5; border-right:1px solid #d5d5d5; }
+#boxes #divLogin .windowFooter { width:385px;; text-align:right;}
+
+.login_infoWrap { margin-top:7px; margin-left:10px; margin-right:10px; text-align:center; }
+.login_infoWrap2 { margin-top:8px; margin-left:10px; margin-right:10px; }
+
+/* 단축키 */
+div.autosize { display: table; width: 1px; }
+div.autosize > div { display: table-cell; }
+
+#divShortcut { position: relative; display:none; filter:alpha(opacity=80); -moz-opacity:0.80; -khtml-opacity: 0.80; opacity: 0.80; z-index:999; }
+#divShortcut .keyboardShortCut { font-size: 9px; font-weight: bold; padding: 2px; background-color:white; border:1px solid #333; position: relative; }
+#scLogin { position: absolute; z-index: 999; left: 640px; top: 5px; width: 360px; height:40px; }
+#scMainMenu { position: absolute; z-index: 999; left: 480px; top: 40px; width: 470px; height:180px; }
+#scCart { position: absolute; z-index: 999; left: -10px; top: -20px; width: 220px; height:300px; }
+#scOrder { position: absolute; z-index: 999; left: 0px; top: 0px; width: 220px; height:80px; }
+
+/* 장바구니 */
+#divCart { position:relative; float:right; width:200px; border:1px solid #b8b8b8; padding:10px; z-index:50; background-image: url('../images/bill_top_background.png'); background-repeat: repeat-x; background-color: #fff; margin-right:8px; margin-top: 36px; }
+#divCart .divOrder {float:left; position: relative; margin-top:40px; width:200px;}
+#divCart .divOrderTitle { float:left; width:160px; height:58px; background-image: url('../images/bill_top_title.png'); margin-top:0px;}
+#divCart .divOrderToolbar { position:absolute; left:0px; top:60px; width:210px; height:16px; text-align:right; margin-top:10px; margin-bottom:5px; padding:5px; border-top:1px solid #ccc; border-bottom:1px solid #ccc; background-color:#f6f6f6; }
+#divCart .divOrderToolbarLeft { float:left; width:50px; text-align:left; }
+#divCart .divOrderToolbarRight { float:right; width:120px; vertical-align: bottom;}
+#divCart .divOrderGuide { border:1px solid #999; padding:5px; background-color:#eee; margin-bottom: 8px; text-align:right; margin-top: 5px; }
+#divCart .divOrderButton { margin-top:0px; margin-bottom:-35px; text-align: center; position:relative; float:left; padding-left: 4px; }
+#divCart .fixingCart { float:right; width:40px; height:50px; cursor:pointer; background-image:url('/~yamnyam/./modules/board/skins/yamnyam_foodlist/images/unpin.png'); margin-right: -10px; margin-top:-35px; background-repeat: no-repeat; background-position: left;}
+#divCart .fixingText { width:50px; text-align:right; font-size:11px; color:#aaa; float:right; margin-top: 2px; }
+#divCart .divOrderStatus {float:left;}
+#divCart .divStoreContent{ position: relative; overflow: auto;}
+
+#divCart hr {width:100%; height:1px;  border:0px; border-bottom: 1px dashed #999;}
+#divCart .product_name {width: 110px; float: left;}
+#divCart .product_price {width: 55px; height:16px; float: left; text-align: right;}
+#divCart .product_amount {width: 35px; float: left; text-align: right;}
+#divCart img {vertical-align: middle; margin:0 2px;}
+
+
+#divBottomMenu { height:25px; padding-top:10px; }
+
+
+.toastMessages { position:absolute; z-index:9700; left:0px; top:0px; width:302px; height:82px; }
+
+#toastMessage_0 { display:none; background-image: url('../images/toast_0.png'); }
+#toastMessage_1 { display:none; background-image: url('../images/toast_1.png'); }
+#toastMessage_2 { display:none; background-image: url('../images/toast_2.png'); }
+#toastMessage_3 { display:none; background-image: url('../images/toast_3.png'); }

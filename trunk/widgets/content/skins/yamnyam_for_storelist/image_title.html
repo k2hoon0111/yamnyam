@@ -1,0 +1,102 @@
+
+{@$_idx=0}
+{@$thumbnail_idx=0}
+
+<!--@foreach($widget_info->content_items as $key => $item)-->
+		
+	{@ // 상점의 이름으로부터 상점이 설정한 최소값을 구한다.
+		$nickname = $item->getNickName();
+		$oDB = &DB::getInstance();
+		$result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '$nickname' and module_srl = 141 limit 1) and var_idx=1 limit 1;");
+		
+		$output = $oDB->_fetch($result);
+		
+		$temp = (array)$output;
+	}
+<!--@if($widget_info->closed=="N")-->
+		<!-- // 드래그 앤 드랍 -->
+		<script type="text/javascript">
+		
+		var minimumPrice = new Object();
+	
+			minimumPrice['{$item->getNickName()}']={$temp[value]};
+			
+		var id = new Object();
+		var price = new Object();
+		var calorie = new Object();
+		var name = new Object();
+		var phone = new Object();
+		var nickname = new Object();
+			
+		(function($){
+			$(function(){
+				$("#div{$item->getDocumentSrl()}").draggable({
+					start: function() {
+						id = {$item->getDocumentSrl()};
+						price = {$item->getExtraEidValue('price')};
+						calorie = "{$item->getExtraEidValue('calorie')}";
+						name = "{$item->getTitle()}";
+						phone= "{$item->getExtraEidValue('cellphone')}";
+						nickname="{$item->getNickName()}";
+	
+						var temp_top = $('#divCart').css("margin-top");
+						temp_top = parseInt(temp_top.substring(0, temp_top.length-2));
+						$('#divCart').css("margin-top",temp_top-1);
+						$('#divCart').css("margin-right","7px");
+						$('#divCart').css("border","2px #cc5555 solid");
+						
+						$('#droptheitem').css("visibility","visible");
+					},
+					helper: function() {
+						return $(this).clone();	
+					},
+					stop: function() {
+						$('#divCart').css("border","1px solid #b8b8b8");
+						$('#divCart').css("margin-right","8px");
+						var temp_top = $('#divCart').css("margin-top");
+						temp_top = parseInt(temp_top.substring(0, temp_top.length-2));
+						$('#divCart').css("margin-top",temp_top+1);
+						
+						$('#droptheitem').css("visibility","hidden");
+					}
+				});
+	
+				$("#div{$item->getDocumentSrl()}").dblclick(function() {
+					id = {$item->getDocumentSrl()};
+					price = {$item->getExtraEidValue('price')};
+					calorie = "{$item->getExtraEidValue('calorie')}";
+					name = "{$item->getTitle()}";
+					phone= "{$item->getExtraEidValue('cellphone')}";
+					nickname="{$item->getNickName()}";
+					toCart(id, price,calorie,name,phone,nickname);
+				});
+			});
+		})(jQuery);
+		</script>
+<!--@end-->
+
+	<div id="div{$item->getDocumentSrl()}" class="cell" style="padding:0px; font-size:10px; float:left; width:88px; height:96px; z-index:100; background-color:white; cursor:pointer; border:1px solid #ccc; margin-right:5px;" title="{$item->getTitle()}">
+	<!--@if(1)-->
+		<div style="background: url({$widget_info->content_items[$thumbnail_idx]->getThumbnail()});width:80px;height:62px;border-bottom:1px solid #ccc;padding:4px;margin-bottom:2px; position: relative; float:left;">
+	<!--@else-->
+		<div style="background: url(http://www.skima.co.kr/~yamnyam/modules/board/skins/yamnyam_foodlist/images/blank.gif);width:80px;height:62px;border-bottom:1px solid #ccc;padding:4px;margin-bottom:2px; position: relative; float:left;">
+	<!--@end-->
+		
+			<div style="margin-top:0px; text-align:right; color:white; font-size:13px; font-weight:bold; text-shadow: 0 0 2px rgba(0,0,0, 1.0); -moz-text-shadow: 0 0 2px rgba(0,0,0, 1.0); -webkit-text-shadow: 0 0 2px rgba(0,0,0, 1.0); font-family: Arial;">{number_format($item->getExtraEidValue('price'))}원</div>
+		</div>
+		<center>
+			<!--@if($widget_info->closed=="N")-->
+			<a href="{$item->getLink()}" title="{$item->getTitle()}">{$item->getTitle(38)}</a>
+			<!--@else-->
+			{$item->getTitle(38)}			
+			<!--@end-->
+		</center>
+		<input id="numBox_{$item->getDocumentSrl()}" type=hidden value="1" />
+	</div>			
+
+{@$_idx++}
+{@$thumbnail_idx++}
+<!--@end-->
+
+
+

@@ -1,0 +1,359 @@
+<!--#include("header.html")-->
+<!--%import("css/default.css")-->
+{@
+	$lang->extra_vars1 = '가격';
+	$lang->extra_vars6 = '영업시작시간';
+	$lang->extra_vars7 = '영업마감시간';
+	$lang->extra_vars3 = '결제방식';
+	$lang->title = '상점명';
+
+}
+
+<!--%import("../../tpl/filter/insert_restaurant.xml")-->
+<script type="text/ecmascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript">
+
+(function($){
+    $(function(){
+		$(document).ready(
+			function() {
+				var flag = false;
+				var marker = new google.maps.Marker();
+				var latlng = new google.maps.LatLng(37.29355, 126.974208);
+				var myOptions = {
+					zoom: 16,
+					center: latlng,
+					mapTypeId: google.maps.MapTypeId.ROADMAP
+				};
+				var map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
+				$(".hidden_latitude").attr('value' , latlng.lat().toString());
+				$(".hidden_longitude").attr('value', latlng.lng().toString());
+				
+				google.maps.event.addListener(map, 'click', function(event) {
+					$('#map_canvas').css('width','100%');
+					$('#map_canvas').css('height', '500px');
+					
+					google.maps.event.trigger(map, 'resize');
+					if(flag){
+						map.setCenter(event.latLng);
+										
+						$(".hidden_latitude").attr('value' ,event.latLng.lat().toString());
+						$(".hidden_longitude").attr('value', event.latLng.lng().toString());
+		
+						marker.setMap();
+						marker = new google.maps.Marker({
+							position: event.latLng, 
+							map: map
+						});
+					}
+					else{
+						map.setCenter(latlng);
+						flag = true;
+						marker.setMap();
+						$(".hidden_latitude").attr('value' , latlng.lat().toString());
+						$(".hidden_longitude").attr('value', latlng.lng().toString());
+						marker = new google.maps.Marker({
+							position: latlng, 
+							map: map
+						});
+					}
+				});
+			}
+		);
+		$(document).ready(
+		/* 미리 입력해 둔 시간 재 지정하기.*/
+			function() {
+				var temp_check = '{$oDocument->getExtraValue(9)}';
+				var temp_i=0;
+				var temp_day="";
+
+				for(temp_i=0; temp_i < temp_check.length; temp_i++) {
+					if(Math.floor(temp_i/24)==0) temp_day="sun";
+					else if(Math.floor(temp_i/24)==1) temp_day="mon";
+					else if(Math.floor(temp_i/24)==2) temp_day="tue";
+					else if(Math.floor(temp_i/24)==3) temp_day="wed";
+					else if(Math.floor(temp_i/24)==4) temp_day="thu";
+					else if(Math.floor(temp_i/24)==5) temp_day="fri";
+					else if(Math.floor(temp_i/24)==6) temp_day="sat";
+
+					if(temp_check[temp_i]=='1') {
+						$('.'+temp_day+'_'+temp_i%24).attr('checked', 'checked');
+					}
+				}
+				
+			}
+		);
+    });
+})(jQuery);
+</script>
+
+
+<!-- 게시물 작성 폼 -->
+<form action="./" method="post" onsubmit="return procFilter(this, insert_restaurant)" id="fo_write">
+	<input type="hidden" name="mid" value="{$mid}" />
+	<input type="hidden" name="content" value="{$oDocument->getContentText()}" />
+	<input type="hidden" name="document_srl" value="{$document_srl}" />
+	<input type="hidden" name="extra_vars4" class="hidden_latitude" value="{$latitude}" />
+	<input type="hidden" name="extra_vars5" class="hidden_longitude" value="{$longitude}" />
+
+	<div class="divRestaurantAdd">
+		<div class="restreg_top">
+			<h3><img src="images/register_store_title.png" /></h3>
+		</div>
+		<div class="fill_blank">
+		</div>
+		<center>기본정보</center>
+		<div class="restreg_middle">
+			<!--@if(count($extra_keys))-->
+				<table cellspacing="0" summary="" class="inputTable">
+					<col width="150" />
+					<col />
+					<tr>
+						<th class="table_title">상점명</th>
+						<td>
+							<!--@if($logged_info->is_admin=='Y')-->
+								<input type="text" name="title" class="title inputTypeText" value="{htmlspecialchars($oDocument->getTitleText())}" />
+							<!--@else-->
+								<input type="text" name="title" class="title inputTypeText" value="{$logged_info->nick_name}" readonly />
+							<!--@end-->							
+						</td>
+					</tr>
+					<tr>
+						<th class="table_title">음식점분류선택</td>
+							<td>
+								<!--@foreach($category_list as $val)-->
+									<input type="radio" name="category_srl"
+									<!--@if(!$val->grant)-->
+										disabled="disabled"
+									<!--@endif--> 
+									value="{$val->category_srl}" <!--@if($val->grant&&$val->selected||$val->category_srl==$oDocument->get('category_srl'))-->
+										checked="yes"
+									<!--@endif-->
+									/>{$val->title}
+								<!--@endforeach-->
+							</td>
+					</tr>
+					<tr>
+						<th class="table_title">영업 시간</th>
+						<td>
+							<input type="text" value="{$oDocument->getExtraValue(6)}" name="extra_vars6" size="6" />부터 
+							<input type="text" value="{$oDocument->getExtraValue(7)}" name="extra_vars7" size="6" />까지
+						</td>
+					</tr>
+						<th class="table_title">최소 주문가격</th>
+						<td><input class="text" type="text" name="extra_vars1" value="{$oDocument->getExtraValue(1)}" />원</td>
+					</tr>
+						<th class="table_title">결제 방식</th>
+						<td>
+							<input type="checkbox" value="현금" name="extra_vars3"<!--@if($oDocument->getExtraValueHTML(3) == '현금, 카드' ||$oDocument->getExtraValueHTML(3) == '현금')-->checked="yes"<!--@endif--> /><label>현금</label>
+							<input type="checkbox" value="카드" name="extra_vars3"<!--@if($oDocument->getExtraValueHTML(3) == '현금, 카드' ||$oDocument->getExtraValueHTML(3) == '카드')-->checked="yes"<!--@endif--> /><label>카드</label>
+						</td>
+					</tr>
+					</tr>
+						<th class="table_title">음식점 전화번호</th>
+						<td><input class="text" type="text" name="extra_vars10" value="{$oDocument->getExtraValue(10)}" /></td>
+					</tr>
+				</table>
+				<br />&nbsp&nbsp<b>세부 시간</b>
+				<input type="hidden" name="extra_vars9" size="100" value="{$oDocument->getExtraValue(9)}" class="detail_time_str" />
+				<table style="font-size:8px; margin:0 auto;">
+					<tr>
+						<td>시</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==0)-->
+								<td>{$temp_i/2}</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+					<tr>
+						<td>월</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==1)-->
+								<td>
+									<input type="checkbox" value="1" class="mon_{(integer)($temp_i/2)}" name="dummyVal" />
+								</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+					<tr>
+						<td>화</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==1)-->
+								<td>
+									<input type="checkbox" value="1" class="tue_{(integer)($temp_i/2)}" name="dummyVal" />
+								</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+					<tr>
+						<td>수</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==1)-->
+								<td>
+									<input type="checkbox" value="1" class="wed_{(integer)($temp_i/2)}" name="dummyVal" />
+								</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+					<tr>
+						<td>목</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==1)-->
+								<td>
+									<input type="checkbox" value="1" class="thu_{(integer)($temp_i/2)}" name="dummyVal" />
+								</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+					<tr>
+						<td>금</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==1)-->
+								<td>
+									<input type="checkbox" value="1" class="fri_{(integer)($temp_i/2)}" name="dummyVal" />
+								</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+					<tr>
+						<td>토</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==1)-->
+								<td>
+									<input type="checkbox" value="1" class="sat_{(integer)($temp_i/2)}" name="dummyVal" />
+								</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+					<tr>
+						<td>일</td>
+						<!--@for($temp_i=0; $temp_i<49; $temp_i++)-->
+							<!--@if($temp_i%2==1)-->
+								<td>
+									<input type="checkbox" value="1" class="sun_{(integer)($temp_i/2)}" name="dummyVal" />
+								</td>
+							<!--@else-->
+								<td></td>
+							<!--@end-->
+						<!--@end-->
+					</tr>
+				</table>
+				<div id="detailTimeButton" style="border:1px solid #000; width:130px; padding:5px 0; cursor:pointer; float:right; margin-right:30px; text-align:center;">세부 시간 변경 확인</div>
+			<!--@endif-->
+		</div>
+
+		<div class="map_body">
+			  <div id="map_canvas" style="width:150px; height:100px; margin:10px 0;"></div>		
+		</div>
+		<div class="editor">{$oDocument->getEditor()}</div>
+
+		<div class="tag">
+			<input type="text" name="tags" value="{htmlspecialchars($oDocument->get('tags'))}" class="inputTypeText" />
+			<p class="info">{$lang->about_tag}</p>
+		</div>
+	</div>
+
+		<div class="fl gap1">
+			<!--@if($is_logged)-->
+				<span>
+					<img src="images/cancel.png" onclick="location.href='{getUrl('act','')}'" />
+				</span>
+			<!--@end-->
+		</div>
+		<div class="fr gap1">
+			<span>
+				<input type="image" src="images/register.png" accesskey="s" />
+			</span>
+		</div>
+
+		<div class="clear"></div>
+</form>
+<!--#include("footer.html")-->
+
+<script>
+	$('#detailTimeButton').click(function() {
+		var detailTimeStr = "";
+		
+		var temp_i;
+		
+		for(temp_i=0; temp_i<24; temp_i++) {
+			if($('.sun_'+temp_i).is(':checked')) {
+				detailTimeStr +="1";
+			}
+			else {
+				detailTimeStr +="0";
+			}
+		}
+
+		for(temp_i=0; temp_i<24; temp_i++) {
+			if($('.mon_'+temp_i).is(':checked')) {
+				detailTimeStr +="1";
+			}
+			else {
+				detailTimeStr +="0";
+			}
+		}
+		
+		for(temp_i=0; temp_i<24; temp_i++) {
+			if($('.tue_'+temp_i).is(':checked')) {
+				detailTimeStr +="1";
+			}
+			else {
+				detailTimeStr +="0";
+			}
+		}
+		
+		for(temp_i=0; temp_i<24; temp_i++) {
+			if($('.wed_'+temp_i).is(':checked')) {
+				detailTimeStr +="1";
+			}
+			else {
+				detailTimeStr +="0";
+			}
+		}
+		
+		for(temp_i=0; temp_i<24; temp_i++) {
+			if($('.thu_'+temp_i).is(':checked')) {
+				detailTimeStr +="1";
+			}
+			else {
+				detailTimeStr +="0";
+			}
+		}
+		
+		for(temp_i=0; temp_i<24; temp_i++) {
+			if($('.fri_'+temp_i).is(':checked')) {
+				detailTimeStr +="1";
+			}
+			else {
+				detailTimeStr +="0";
+			}
+		}
+		
+		for(temp_i=0; temp_i<24; temp_i++) {
+			if($('.sat_'+temp_i).is(':checked')) {
+				detailTimeStr +="1";
+			}
+			else {
+				detailTimeStr +="0";
+			}
+		}
+		
+		$('.detail_time_str').attr('value' , detailTimeStr);
+		alert('세부 시간이 저장 되었습니다. 작성 완료 후 등록 단추를 눌러주세요.');
+	});
+</script>

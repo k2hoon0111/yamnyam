@@ -1,0 +1,84 @@
+#footer {
+	position: absolute;
+	width: 100%;
+	bottom: 0;
+	height: 70px;
+	z-index:999;
+}
+
+#divUpper{
+	background-image: url('../images/bg_line.png');
+	height: 10px;
+}
+#divCart{
+	z-index: -1;
+}
+
+
+#divCartWrap {
+	position:absolute;
+	left: 0px;
+	top: 0px;
+	width: 100%;
+	background: white;
+	color: black;
+	z-index: 99;
+	display: none;
+}
+#divCartSub{
+	background-image: url('../images/bg_cart_sub.png');
+	width:100%-20px;
+	height: 12px;
+	padding:10px 5px;
+	color: white;
+}
+#divCartBt{
+	height: 60px;
+	background-image: url('../images/bg_cart.png');
+	width: 50%;
+	position: absolute;
+	text-align: center;
+	bottom: 0;
+	float: left;
+	border-top:1px solid #999;
+	font-size: 11px;
+	border-right:1px solid #bbb;
+	bottom:0px;
+	z-index: 5;
+}
+#divCartBt img{
+	margin-top:10px;
+	margin-bottom:2px;
+}
+#divOrder{
+	height: 60px;
+	background-image: url('../images/bg_cart.png');
+	position: absolute;
+	right: 0;
+	text-align: center;
+	z-index: 4;
+	width:50%;
+	float: left;
+	border-top:1px solid #999;
+	font-size: 11px;
+	bottom:0px;
+	z-index: 4;
+}
+#divOrder img{
+	margin-top:10px;
+	margin-bottom:2px;
+}
+
+
+#divCart .product_name{ font-size: 10px; font-weight: bold;margin:7px 0;}
+#divCart .product_nickname{color: #626262; font-size: 10px;}
+#divCart .number{color:#999; font-size: 14px;font-weight: bold;}
+#divCart .thumb{ float: left; width: 80px; height: 100%-4px; margin-right:-100px;position: relative;left:-100px; padding: 2px;}
+#divCart .thumb img{border:1px solid #ccc;width:75px; height:56px;};
+#divCart .food_content{ opacity: 0; }
+
+#divCart .product_class{ border-bottom: 1px solid #aaa; height: 64px; padding-right:60px;padding-left: 100px; _width /**/:100%; margin-bottom: 1px; }
+#divCart .subjects{width: 100%; height:64px; font-size: 12px;float:left; overflow: hidden; margin-left: -10px; }
+#divCart .delete{ text-align: center; width: 50px; float:right; margin-left: -50px; left:50px; position: relative; padding:16px 0;}
+
+.cart_sum{color: red; font-weight: bold;}

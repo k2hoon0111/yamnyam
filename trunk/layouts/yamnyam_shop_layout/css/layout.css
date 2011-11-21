@@ -1,0 +1,49 @@
+@charset "utf-8";
+
+/* Layout */
+form, fieldset{ border:0; margin:0; padding:0;}
+a:link,a:visited,a:active,a:hover {text-decoration:none;}
+
+body { background-color:#e7e4e2; background-image: url('../images/background.png'); background-repeat: repeat-y;
+background-position: center;
+ }
+
+#layoutSiteMain { width:1000px; margin:0 auto; border:0; border-left:1px solid #a2a09f; border-right:1px solid #a2a09f; }
+
+#layoutHeader { zoom:1; position:relative; width:100%; height:101px;}
+#layoutHeader .logo{ width:100%;cursor:pointer; position:absolute; background-image:url("../images/admin_title_bg.png");
+	background-repeat: no-repeat; height:62px;}
+#layoutHeader:after{ content:""; display:block; clear:both;}
+#layoutHeader .account{ position:absolute; top:50px; left:770px; text-align:right; }
+#layoutHeader .gnb{ position:absolute;background-image:url("../images/menubar_bg.png");width:100%; top:62px; height:37px; border-bottom: 2px solid #bbb;}
+
+#layoutHeader .menuBar {padding-top: 15px; padding-left:500px}
+#layoutHeader .menuBar .menuItem {float: left; margin: 0 10px;}
+.yuimenubaritemlabel-hassubmenu {font-size: 14px; font-weight: bold;}
+
+#layoutBody .body{ margin:20px 0; zoom:1; }
+#layoutBody .body:after{ content:""; display:block; clear:both;}
+#layoutBody .content{ width:982px; margin:0; padding:9px; }
+
+#layoutFooter { background-image:url("../images/layout_copyright_background.png"); width:1000px; height:100px; color:#ccc; }
+#divBottomMenu { text-align:center; padding-top:5px; color:#959595}
+#divCopyright {  text-align:right; color:#666; height:61px; }
+
+
+#mask { position:absolute; z-index:9000; background-color:#000; display:none; left:0px; top:0px; }
+#boxes .window { position:absolute; width:398px; height:216px; display:none; z-index:9999; }
+#boxes #divLogin{ position:absolute; width:398px; height:216px; background-image: url("../images/login_box_background.png");
+background-repeat: no-repeat;}
+#boxes .window .windowHeader { text-align:right; margin-left:20px;}
+#boxes #divLogin .windowBody { margin-left:20px;}
+#boxes #divLogin .windowFooter { width:300px;; text-align:right; margin-left:20px;}
+
+.iogin_infoWrap { margin-top:7px; margin-left:10px; text-align:center }
+.iogin_infoWrap2 { margin-top:8px; margin-left:10px }
+
+#mymenubar {
+	border:none; background:none; height:37px;
+}
+.yuimenubaritemlabel {
+	border:none; height:33px; padding-top:6px;
+}

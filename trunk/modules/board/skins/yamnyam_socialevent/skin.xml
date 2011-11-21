@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+    <title xml:lang="ko">yamnyam_socialevent</title>
+    <description xml:lang="ko">소셜 커머스</description>
+    <version>1.0</version>
+    <date>2010-12-24</date>
+    <author email_address="nrkim87@skima.co.kr" link="http://www.yamnyam.com">
+        <name xml:lang="ko">nrkim87</name>
+    </author>
+    <license>LGPL v2</license>
+    <extra_vars>
+        <var name="title" type="text">
+            <title xml:lang="ko">게시판 제목</title>
+			<description xml:lang="ko">작성하면 화면에 표시 됨</description>
+        </var>
+        <var name="comment" type="textarea">
+            <title xml:lang="ko">게시판 상세 설명</title>
+			<description xml:lang="ko">작성하면 화면에 표시 됨</description>
+        </var>
+    </extra_vars>
+</skin>
+

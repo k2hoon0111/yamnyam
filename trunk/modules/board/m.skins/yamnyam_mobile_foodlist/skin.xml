@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<skin version="0.2">
+    <title xml:lang="ko">yamnyam_mobile_foodlist</title>
+    <title xml:lang="en">yamnyam_mobile_foodlist</title>
+    <description xml:lang="ko">
+        yamNyam 모바일 음식 리스트 스킨입니다.
+    </description>
+    <description xml:lang="en">
+        What the fuck.
+    </description>
+    <version>0.1</version>
+    <date>2010-06-10</date>
+
+    <author email_address="developers@yamNyam.com" link="http://yamNyam.com/">
+        <name xml:lang="ko">yamNyam</name>
+        <name xml:lang="en">yamNyam</name>
+    </author>
+	<extra_vars />
+</skin>

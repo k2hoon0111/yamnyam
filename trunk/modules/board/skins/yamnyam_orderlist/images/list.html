@@ -1,0 +1,597 @@
+<include target="_header.html" />
+
+<!--[if lt IE 7]>
+ <style type="text/css">
+ .dock img { behavior: url(iepngfix.htc) }
+ </style>
+<![endif]-->
+
+<!-- 수량 변경을 위한 스크립트 -->
+<script type="text/javascript">
+// <![CDATA[
+
+//토글 스위치 변수
+var toggleCalory = true;
+var togglePrice = true;
+
+var data = new Array();
+var sumPrice = new Object();
+var minimumPrice = new Object();
+var payment = new Object();
+
+	$(document).ready(
+		function()
+		{
+			$('#dock').Fisheye(
+				{
+					maxWidth: 9,
+					items: 'a',
+					itemsText: 'span',
+					container: '.dock-container',
+					itemWidth: 43,
+					proximity: 90,
+					halign : 'center'
+				}
+			)
+		}
+	);
+
+
+/*수량 변경을 위한 함수*/
+function amount(num, i){
+	
+	if($('#numBox_'+num).val() == 1 && i == 1) {
+		$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);
+	}
+	else if($('#numBox_'+num).val() > 1 && $('#numBox_'+num).val() < 9) {
+		$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);	
+	}
+	else if($('#numBox_'+num).val() >= 9 && i == -1) {
+		$('#numBox_'+num).val(parseInt($('#numBox_'+num).val())+i);
+	}
+
+}	
+
+
+/*가격대 검색을 위한 slider UI*/
+(function($){
+	function sliderValue(sliderName, maxValue) {
+		var divName = "#"+sliderName;
+		
+		var parentWidth = parseInt($("#slider").css("width"))-parseInt($("#sliderLeftPosition").css("width"))*2;
+
+		if($(divName).css("left")=="auto") {
+			if(sliderName=="sliderLeftPosition") return 0;
+			if(sliderName=="sliderRightPosition") return 30000;
+		}
+
+		var calValue = parseInt($(divName).css("left")) * maxValue / parentWidth;		
+		
+		calValue = Math.round(calValue)*1000;
+		
+		return calValue;
+	}
+
+	$(document).ready(function() {
+	
+		$("#sliderPrice1").empty(); //최소금액 초기화
+		$("#sliderPrice2").empty(); //최대금액 초기화
+		var search_min2 = "{$search_min2}";
+		var search_max2 = "{$search_max2}";
+
+ 		if(search_min2=="") {
+			$(".search_min").attr({value:sliderValue("sliderLeftPosition", 30)});
+			$(".search_max").attr({value:sliderValue("sliderRightPosition", 30)});
+			$(".search_min2").attr({value:"0px"});
+			$(".search_max2").attr({value:"250px"});
+			$("#sliderPrice1").append(sliderValue("sliderLeftPosition", 30));
+			$("#sliderPrice2").append(sliderValue("sliderRightPosition", 30));
+		}
+		else {
+			$(".search_min").attr({value:sliderValue("sliderLeftPosition", 30)});
+			$(".search_max").attr({value:sliderValue("sliderRightPosition", 30)});
+			$(".search_min2").attr({value:search_min2});
+			$(".search_max2").attr({value:search_max2});
+			$("#sliderLeftPosition").css('left',search_min2);
+			$("#sliderRightPosition").css('left',search_max2);
+			$("#sliderPrice1").append(sliderValue("sliderLeftPosition", 30));
+			$("#sliderPrice2").append(sliderValue("sliderRightPosition", 30));
+		}
+		
+		var firstLeftPosition;
+		var firstRightPosition;
+
+		$("#sliderLeftPosition").draggable({axis:'x', containment:'parent', drag: function(event, ui) {
+					$("#sliderPrice1").empty();
+					$("#sliderPrice1").append(sliderValue("sliderLeftPosition", 30));
+					$(".search_min").attr({value:sliderValue("sliderLeftPosition", 30)});
+					$(".search_min2").attr({value:$("#sliderLeftPosition").css("left")});
+			}
+		, start: function(event, ui) {
+				firstLeftPosition = parseInt($("#sliderLeftPosition").css("left"));
+			}
+		, stop: function(event, ui) {
+				if (parseInt($("#sliderLeftPosition").css("left")) >= parseInt($("#sliderRightPosition").css("left"))) {
+					$("#sliderLeftPosition").css('left',firstLeftPosition);
+					$("#sliderPrice1").empty();
+					$("#sliderPrice1").append(sliderValue("sliderLeftPosition", 30));
+				}
+			}
+		});
+		
+		$("#sliderRightPosition").draggable({axis:'x', containment:'parent', drag: function(event, ui) {
+					$("#sliderPrice2").empty();
+					$("#sliderPrice2").append(sliderValue("sliderRightPosition", 30));
+					$(".search_max").attr({value:sliderValue("sliderRightPosition", 30)});
+					$(".search_max2").attr({value:$("#sliderRightPosition").css("left")});
+			}
+		, start: function(event, ui) {
+				firstRightPosition = parseInt($("#sliderRightPosition").css("left"));
+			}
+		, stop: function(event, ui) {
+				if (parseInt($("#sliderRightPosition").css("left")) <= parseInt($("#sliderLeftPosition").css("left"))) {
+					$("#sliderRightPosition").css('left',firstRightPosition);
+					$("#sliderPrice2").empty();
+					$("#sliderPrice2").append(sliderValue("sliderRightPosition", 30));
+				}
+			}
+		});
+	});
+	
+})(jQuery);
+
+
+// ]]>
+</script>
+
+<!--// 확장변수 정렬을 위한 코드추가 -->
+<!--@if($sort_index==price || $sort_index==preferance)-->
+
+	{@$noticeTF = false;
+		if($module_info->except_notice == 'Y') $noticeTF = true;
+		$args->module_srl = $module_info->module_srl;
+		$args->list_count = $total_count;
+		$args->category_srl = $category;
+		$oDocumentModel = &getModel('document');
+		$output = $oDocumentModel->getDocumentList($args, $noticeTF);
+		$document_list = $output->data;
+	}
+	<!--@foreach($document_list as $no => $document)-->
+
+		{@$extra_sortkey[$no] = $document->getExtraEidValue($sort_index);
+			$extra_sortkey2[$no] = $no;
+		}
+	<!--@end-->
+
+	{@array_multisort($extra_sortkey, $extra_sortkey2, $document_list);
+		if($module_info->order_type == 'asc' || $order_type == 'asc') $document_list = array_reverse($document_list);
+	}
+
+	<!--@if($document_srl)-->
+		<!--@foreach($document_list as $document)-->
+			{@$extra_doc_srl[] = $document->document_srl;
+			}
+		<!--@end-->
+
+		{@$page = ((int) (array_search($document_srl, $extra_doc_srl) / $module_info->list_count)) + 1;
+		}
+	<!--@end-->
+	{@$document_list = array_slice($document_list, $module_info->list_count * ($page-1), $module_info->list_count, true);
+	}
+<!--@end-->
+
+<p cond="!$document_list && !$notice_list" class="no_ducument">{$lang->no_documents}</p>
+
+
+<script type="text/javascript">
+// <![CDATA[
+function selectCategory(category){
+	$(".food_category").attr({value:category});
+}
+// ]]> 
+</script>
+  
+<!-- // 게시판 시작 -->
+<div id="divFoodList">
+	 <!--// 카테고리 표시 -->
+	<div id="divCategory">
+		<form action="{getUrl()}" method="get" onsubmit="return procFilter(this, search)" id="fo_search2">
+	        <!--@if($vid)-->
+	        	<input type="hidden" name="vid" value="{$vid}" />
+	        <!--@end-->
+	        <input type="hidden" name="mid" value="{$mid}" />
+	        <input type="hidden" name="search_target" value="price" />
+			<input type="hidden" class="search_min" name="search_min" value="" />
+	        <input type="hidden" class="search_max" name="search_max" value="" />
+			<input type="hidden" class="search_min2" name="search_min2" value="" />
+	        <input type="hidden" class="search_max2" name="search_max2" value="" />
+	        {@
+		        $today=mktime();
+				$today_time = date('H:i', $today);
+	        }
+	        <input type="hidden" class="current_time" name="current_time" value="{$today_time}" />
+	        <div id="search_left">
+	        <img src="images/title_food_category_type.png" />
+	        <br />
+	        <input type="hidden" name="category" value="" class="food_category">
+			<div class="dock" id="dock">
+			  <div class="dock-container">	            	 
+	        <!--@foreach($category_list as $val)-->
+	            <!--@if($val->depth == 0)-->
+	            	 <!--@if($val->title=="한식")-->
+					 <div style="margin-left:-35px; width:43px; height:43px">
+					 <a class="dock-item">
+	            	 	<img src="images/button_category_1<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+	            	 <!--@elseif($val->title=='중식')-->
+					 <div style="margin-left:8px; width:43px; height:43px">
+					 <a class="dock-item">
+	            	 	<img src="images/button_category_2<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+	            	 <!--@elseif($val->title=='일식')-->
+					 <div style="margin-left:51px; width:43px; height:43px">
+					 <a class="dock-item">
+	            	 	<img src="images/button_category_3<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}" />
+					 <span></span></a>&nbsp
+					 </div>
+					 <!--@elseif($val->title=='양식')-->
+	            	 <div style="margin-left:90px; width:43px; height:43px">
+					 <a class="dock-item">
+						<img src="images/button_category_4<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+					 <!--@elseif($val->title=='분식')-->
+	            	 <div style="margin-left:140px; width:43px; height:43px">
+					 <a class="dock-item">
+						<img src="images/button_category_5<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+					 <!--@elseif($val->title=='치킨')-->
+	            	 <div style="margin-left:180px; width:43px; height:43px">
+					 <a class="dock-item">
+						<img src="images/button_category_6<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+					 <!--@elseif($val->title=='피자')-->
+					 <div style="margin-left:220px; width:43px; height:43px">
+					 <a class="dock-item">
+						<img src="images/button_category_7<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+					 <!--@elseif($val->title=='보쌈')-->
+	            	 <div style="margin-left:260px; width:43px; height:43px">
+					 <a class="dock-item">
+						<img src="images/button_category_8<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+					 <!--@elseif($val->title=='곱창')-->
+	            	 <div style="margin-left:300px; width:43px; height:43px">
+					 <a class="dock-item">
+						<img src="images/button_category_9<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+					 <!--@elseif($val->title=='기타/주류')-->
+	            	 <div style="margin-left:340px; width:43px; height:43px">
+					 <a class="dock-item">
+						<img src="images/button_category_10<!--@if($category != $val->category_srl && $category)-->_gray<!--@endif-->.png" OnClick="selectCategory({$val->category_srl});xGetElementById('fo_search2').submit();return false;" id="category_{$val->category_srl}"/>
+					 <span></span></a>&nbsp
+					 </div>
+
+					 <!--@end-->
+	            <!--@end-->
+	        <!--@end-->
+					</div>
+				</div>
+	        	<br />
+	        	<br />
+				<div id="dummySpace">
+				    <div id="divCategory_57" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==57)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_59" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==59)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_61" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==61)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_63" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==63)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_191" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==191)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_507" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==507)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_509" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==509)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_511" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==511)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_513" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==513)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				    <div id="divCategory_193" class="divFoodCategory_window">
+				        <div class="Header">
+				        </div>
+				        <div class="Body">
+				            <!--@foreach($category_list as $val)-->
+								<!--@if($val->depth==1 && $val->parent_srl==193)-->
+				                	{str_repeat("&nbsp;&nbsp;",$val->depth)}
+				                	<a href=# onclick="doChangeCategory({$val->category_srl});">{$val->title}</a>
+				                	<br/>
+				            	<!--@endif-->
+				            <!--@end-->
+				        </div>
+				    </div>
+				</div>
+				<div>
+					<input type="text" name="search_keyword" value="{htmlspecialchars($search_keyword)}" class="inputTypeText" size="40"/>
+			        <a href="#" onclick="xGetElementById('fo_search2').submit();return false;" style="vertical-align:bottom;"><img src="./images/search.png" /></a>
+		        </div>
+	        </div>
+			<div id="sliderSearch">
+	        <img src="images/title_price_search.png" />
+				<p style="font-size:20px; margin-top:5px; margin-bottom:10px;">
+					<a id="sliderPrice1"></a>&nbsp<img src="images/fromWon.png"/>
+				</p>
+				<div id="slider">
+					<!--@if($_GET['search_min2'])-->
+					<div id="sliderLeftPosition" style="float:left; left:{@$_GET['search_max2']}; width:10px; height:20px; margin-top:-5px;"></div>
+					<!--@else-->
+					<div id="sliderLeftPosition" style="float:left; left:0px; width:10px; height:20px; margin-top:-5px; "></div>
+					<!--@end-->
+					<!--@if($_GET['search_max2'])-->
+					<div id="sliderRightPosition" style="float:left;left:{@$_GET['search_max2']}; width:10px; height:20px; margin-top:-5px;"></div>
+					<!--@else-->
+					<div id="sliderRightPosition" style="float:left;left:250px; width:10px; height:20px; margin-top:-5px;"></div>
+					<!--@end-->
+				</div>
+				
+				<p style="font-size:20px; margin:0px; text-align:right;">
+					<a id="sliderPrice2"></a>&nbsp<img src="images/toWon.png"/>
+				</p>
+			</div>
+
+	    </form>
+	</div>
+	<include cond="$oDocument->isExists()" target="_read.html" />
+
+	<div id="divSorting">
+		<a href="{getUrl()}"><img src="images/random.png"/></a> | 
+		<a href="{getUrl('sort_index','preferance','order_type',$order_type)}"><img src="images/favoriteOrder.png"/></a> | 
+		<a href="{getUrl('sort_index','voted_count','order_type',$order_type)}"><img src="images/korOrder.png"/></a> | 
+		<a href="{getUrl('sort_index','price','order_type',$order_type)}"><img src="images/priceOrder.png"/></a>
+	</div> 
+	
+    <!--@foreach($document_list as $no => $document)-->
+	    <!--@if(!$document->isNotice())-->
+	    
+	    {@ // 상점의 이름으로부터 상점이 설정한 최소값을 구한다.
+	       $nickname = $document->getNickName();
+		   $oDB = &DB::getInstance();
+		   $result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '$nickname' and module_srl = 141 limit 1) and var_idx=1 limit 1;");
+		
+		    $output = $oDB->_fetch($result);
+		    
+		    $temp = (array)$output;
+		
+		// 상점의 이름으로부터 상점 결제방법을 구한다.
+		   $result = $oDB->_query("SELECT value from yman_document_extra_vars where document_srl = (SELECT document_srl FROM yman_documents where nick_name = '$nickname' and module_srl = 141 limit 1) and var_idx=3 limit 1;");
+		
+		    $output = $oDB->_fetch($result);
+		    
+		    $payment = (array)$output;
+
+		 }
+		<!-- // 드래그 앤 드랍 -->
+		<script type="text/javascript">
+		// <![CDATA[
+
+			minimumPrice['{$nickname}']={$temp[value]};
+			payment['{$nickname}']="{$payment[value]}";
+
+		// ]]>
+		</script>
+	    <div id="div{$document->document_srl}" class="cell" style="margin-left:2px;margin-bottom:10px;">
+	    	<input type="hidden" id="id" value="{$document->document_srl}">
+	    	<input type="hidden" id="price" value="{$document->getExtraValue(1)}">
+	    	<input type="hidden" id="calorie" value="{$document->getExtraValue(4)}">
+	    	<input type="hidden" id="name" value="{$document->getTitle($module_info->subject_cut_size)}">
+	    	<input type="hidden" id="phone" value="{$document->getExtraValue(3)}">
+	    	<input type="hidden" id="nickname" value="{$document->getNickName()}">
+	    	<div style="height:20px">
+		    	{@ $width=70*(float)($document->getExtraValue(8)/$document->get('voted_count'))*0.1;}
+		    	<div id="small_star_on" style="width:{$width}px"></div>
+				<div id="small_star_off"></div>
+			</div>
+	        <!--@if($document->thumbnailExists($module_info->thumbnail_width, $module_info->thumbnail_height, $module_info->thumbnail_type))-->
+	        	<div style="border:1px solid #cfcfcf; width:162px; height:132px; margin:0 auto">
+		        	<div style="background: url({$document->getThumbnail(160, 130, 'crop')}); width:160px; height:130px; margin:0 auto;border:1px solid #fff;">
+						<div class="calorie">
+			        	<!--@if($document->getExtraValue(4))-->
+				        	{$document->getExtraValue(4)}kcal
+						<!--@endif-->
+							<div class="item_label_wrap">
+								<!--@if(ereg('hot', $document->getExtraValue(7)))-->
+								<div class="item_label_1"></div>
+								<!--@end-->
+								<!--@if(ereg('new', $document->getExtraValue(7)))-->
+								<div class="item_label_2"></div>
+								<!--@end-->
+							</div>
+						</div>
+						<div class="price">{$document->getImagePrice()}</div>
+		            </div>
+	            </div>
+	        <!--@else-->
+	        	<div style="background: url('http://skima.skku.edu/~yamnyam/modules/board/skins/yamnyam_foodlist/images/blank.gif'); width:160px; height:130px; margin:0 auto;">
+				<div class="calorie">
+	        	<!--@if($document->getExtraValue(4))-->
+		        	<!--<img src="./images/graph.png"/>-->{$document->getExtraValue(4)}kcal
+				<!--@endif-->
+							<div class="item_label_wrap">
+								<!--@if(ereg('hot', $document->getExtraValue(7)))-->
+								<div class="item_label_1"></div>
+								<!--@end-->
+								<!--@if(ereg('new', $document->getExtraValue(7)))-->
+								<div class="item_label_2"></div>
+								<!--@end-->
+							</div>
+				</div>
+				<div class="price">{number_format($document->getExtraValue(1))}<span class="won">원</span></div>
+	            </div>
+	        <!--@end-->
+	      		<div class="title" style="padding-left:4px; padding-top:6px;">
+		            <a href="{getUrl('document_srl',$document->document_srl, 'listStyle', $listStyle, 'cpage','')}"><img src="images/icon_title.png" />&nbsp;{$document->getTitle($module_info->subject_cut_size)}</a>
+	            </div>
+	            <div class="author" style="padding-left:4px; padding-top:6px;">
+	            	<div class="member_{$document->get('member_srl')}"><img src="images/icon_nick.png" />&nbsp;{$document->getNickName()}</div>
+	            </div>
+			<div style="padding:4px;">
+				<div style="padding-top:10px; width:20px; float:left;">
+                	<input id="numBox_{$document->document_srl}" type=text value="1" style="width:10px;" />
+                </div>
+                <div style="padding-top:8px; width:16px; float:left; line-height:10px;">
+                	<a onClick="javascript:amount({$document->document_srl},1)">
+                		<img src="./images/up.png"/>
+                    </a>
+                    <br />
+                	<a onClick="javascript:amount({$document->document_srl},-1)">
+                		<img src="./images/down.png"/>
+                    </a>                    
+                </div>
+				<div style="padding-top:0px; width:125px; float:right;">
+					<a onClick="javascript:toCart({$document->document_srl},{$document->getExtraValue(1)},'{$document->getExtraValue(4)}','{$document->getTitle()}','{$document->getExtraValue(3)}','{$document->getNickName()}')"><img src="images/button_select.png" />
+                    </a>
+				</div>
+			</div>
+        </div>
+	    <!--@end-->
+    <!--@end-->
+</div>
+
+<!--@if($is_logged)-->
+<!-- 로그인시 해당 회원이 최근 주문한 게시물의 srl을 뽑아내야함ㅠㅠ -->
+{@
+   $oDB = &DB::getInstance();
+   $result = $oDB->_query("SELECT document_srl FROM yman_documents where user_id='".$logged_info->user_id."' order by document_srl desc limit 1;");
+
+    $output = $oDB->_fetch($result);
+    
+    $temp = (array)$output;
+    $recent_srl=$temp[document_srl];
+}
+<!--@endif-->
+
+ 
+<div class="divFoodListFooter" style="width:750px;">
+    <div class="pagination" cond="$document_list || $notice_list" style="text-align:center;">
+        <a href="{getUrl('page','','document_srl','','division',$division,'last_division',$last_division)}" class="prevEnd">{$lang->first_page}</a> 
+        <block loop="$page_no=$page_navigation->getNextPage()">
+			<strong cond="$page==$page_no">{$page_no}</strong> 
+			<a cond="$page!=$page_no" href="{getUrl('page',$page_no,'document_srl','','division',$division,'last_division',$last_division)}">{$page_no}</a>
+        </block>
+        <a href="{getUrl('page',$page_navigation->last_page,'document_srl','','division',$division,'last_division',$last_division)}" class="nextEnd">{$lang->last_page}</a>
+    </div>
+	<div class="btnArea" style="text-align:right;">
+		<a href="{getUrl('act','dispBoardWrite','document_srl','')}" class="btn"><img src="./images/register.png" /></a>
+	</div>
+</div>
+
+
+<include target="_footer.html" />
+
